@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+venv/
+env/
+.venv/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Environnement / secrets — ne JAMAIS commiter de vraies valeurs
+.env
+.env.local
+
+# Docker
+*.pid
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Fichiers d'import bruts (peuvent contenir des données sensibles d'étudiants)
+imports_bruts/
+*.xlsx
+!docs/**/*.xlsx
