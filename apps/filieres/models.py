@@ -1,65 +1,107 @@
 from django.db import models
 
+
 class AnneeAcademique(models.Model):
-    libelle = models.CharField(max_length=20)
+    libelle = models.CharField(max_length=20)          # ex: "2025-2026"
     active = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'annee_academique'
+        ordering = ["-libelle"]
+        verbose_name = "Année académique"
+        verbose_name_plural = "Années académiques"
 
     def __str__(self):
         return self.libelle
 
+
 class Niveau(models.Model):
-    annee = models.ForeignKey(AnneeAcademique, on_delete=models.CASCADE, related_name='niveaux')
-    libelle = models.CharField(max_length=10)
+    annee = models.ForeignKey(
+        AnneeAcademique, on_delete=models.CASCADE, related_name="niveaux"
+    )
+    libelle = models.CharField(max_length=10)           # L1, L2, L3
 
     class Meta:
-        db_table = 'niveau'
+        ordering = ["libelle"]
 
     def __str__(self):
-        return f"{self.libelle} - {self.annee}"
+        return f"{self.libelle} ({self.annee})"
+
 
 class Filiere(models.Model):
-    niveau = models.ForeignKey(Niveau, on_delete=models.CASCADE, related_name='filieres')
+    niveau = models.ForeignKey(
+        Niveau, on_delete=models.CASCADE, related_name="filieres"
+    )
     nom = models.CharField(max_length=150)
+    # --- flags d'exception : pilotables par la donnée, jamais codés en dur ---
     a_des_specialites = models.BooleanField(default=True)
     specialite_unique_auto = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'filiere'
-
-    def __str__(self):
-        return f"{self.nom} ({self.niveau})"
-
-class Specialite(models.Model):
-    filiere = models.ForeignKey(Filiere, on_delete=models.CASCADE, related_name='specialites')
-    nom = models.CharField(max_length=150)
-
-    class Meta:
-        db_table = 'specialite'
+        ordering = ["nom"]
+        verbose_name_plural = "Filières"
 
     def __str__(self):
         return self.nom
 
-class Semestre(models.Model):
-    filiere = models.ForeignKey(Filiere, on_delete=models.CASCADE, related_name='semestres')
-    libelle = models.CharField(max_length=20)
-    type = models.CharField(max_length=30, default='normal')
+    @property
+    def specialite_par_defaut(self):
+        """Retourne la spécialité unique si specialite_unique_auto est actif."""
+        if self.specialite_unique_auto:
+            return self.specialites.first()
+        return None
+
+
+class Specialite(models.Model):
+    filiere = models.ForeignKey(
+        Filiere, on_delete=models.CASCADE, related_name="specialites"
+    )
+    nom = models.CharField(max_length=150)
 
     class Meta:
-        db_table = 'semestre'
+        ordering = ["nom"]
+        verbose_name_plural = "Spécialités"
+
+    def __str__(self):
+        return self.nom
+
+
+class Semestre(models.Model):
+    TYPE_CHOICES = [
+        ("normal", "Normal"),
+        ("stage", "Stage"),
+    ]
+    filiere = models.ForeignKey(
+        Filiere, on_delete=models.CASCADE, related_name="semestres"
+    )
+    libelle = models.CharField(max_length=20)            # "Semestre 1"...
+    type = models.CharField(max_length=30, choices=TYPE_CHOICES, default="normal")
+
+    class Meta:
+        ordering = ["libelle"]
 
     def __str__(self):
         return f"{self.libelle} - {self.filiere}"
 
-class Session(models.Model):
-    semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE, related_name='sessions')
-    specialite = models.ForeignKey(Specialite, on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions')
-    type = models.CharField(max_length=30)
+
+class SessionResultat(models.Model):
+    TYPE_CHOICES = [
+        ("normale", "Session normale"),
+        ("rattrapage", "Rattrapage"),
+        ("ajournement", "Ajournement"),
+        ("re_enjambement", "Ré-enjambement"),
+    ]
+    semestre = models.ForeignKey(
+        Semestre, on_delete=models.CASCADE, related_name="sessions"
+    )
+    specialite = models.ForeignKey(
+        Specialite, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="sessions",
+    )  # NULL si tronc commun (ex: Secrétariat de Gestion)
+    type = models.CharField(max_length=30, choices=TYPE_CHOICES)
 
     class Meta:
-        db_table = 'session_resultat'
+        verbose_name = "Session de résultats"
+        verbose_name_plural = "Sessions de résultats"
 
     def __str__(self):
-        return f"Session {self.type} - {self.semestre}"
+        return f"{self.get_type_display()} - {self.semestre}"

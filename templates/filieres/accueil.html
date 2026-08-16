@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center mb-8">
+    <h1 class="text-2xl font-semibold mb-2">Consultez vos résultats</h1>
+    <input type="text" placeholder="Nom et prénom, ou matricule..."
+        class="w-full max-w-md mx-auto border border-neutral-300 rounded-lg px-4 py-3">
+</div>
+
+<h2 class="text-lg font-medium mb-3">Choisir une année académique</h2>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    {% for annee in annees %}
+        <a href="{% url 'filieres:niveaux' annee.id %}"
+           class="block bg-white rounded-xl shadow p-5 hover:shadow-md transition">
+            {{ annee.libelle }}
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}
