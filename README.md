@@ -1,2 +1,0 @@
-# ena-resultats
-
