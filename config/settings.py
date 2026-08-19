@@ -56,11 +56,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB", "ena_resultats"),
-        "USER": os.environ.get("POSTGRES_USER", "ena_user"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "dev_password"),
-        "HOST": os.environ.get("POSTGRES_HOST", "db"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        "NAME": config("POSTGRES_DB", default="ena_resultats"),
+        "USER": config("POSTGRES_USER", default="ena_user"),
+        "PASSWORD": config("POSTGRES_PASSWORD", default="dev_password"),
+        "HOST": config("POSTGRES_HOST", default="db"),
+        "PORT": config("POSTGRES_PORT", default="5432"),
     }
 }
 
