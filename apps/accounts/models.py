@@ -53,3 +53,30 @@ class UtilisateurAdmin(AbstractBaseUser, PermissionsMixin):
         
     def __str__(self):
         return f"{self.nom} ({self.email})"
+
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import Group
+
+@receiver(pre_save, sender=UtilisateurAdmin)
+def set_permissions_by_role(sender, instance, **kwargs):
+    if instance.role == "super_admin":
+        instance.is_superuser = True
+        instance.is_staff = True
+    elif instance.role == "validateur":
+        instance.is_superuser = False
+        instance.is_staff = True
+    else:
+        instance.is_superuser = False
+        instance.is_staff = False
+
+@receiver(post_save, sender=UtilisateurAdmin)
+def assign_group_by_role(sender, instance, created, **kwargs):
+    # Ensure the Validateurs group exists
+    group, _ = Group.objects.get_or_create(name="Validateurs")
+    if instance.role == "validateur":
+        instance.groups.add(group)
+    else:
+        if group in instance.groups.all():
+            instance.groups.remove(group)
+
