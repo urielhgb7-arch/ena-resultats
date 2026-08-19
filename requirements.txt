@@ -1,4 +1,9 @@
-Django==5.2.*
-psycopg2-binary==2.9.*
-openpyxl==3.1.*
-python-decouple==3.8
+Django>=5.2,<5.3
+psycopg[binary]
+openpyxl
+django-anymail[brevo]
+django-guardian
+django-simple-history
+django-axes
+argon2-cffi
+python-decouple
