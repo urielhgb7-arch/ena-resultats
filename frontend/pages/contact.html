@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Contact — ENA Bénin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F7F7F2;color:#2B2B28;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+h1,h2,h3{font-family:'Lora',Georgia,serif;font-weight:700;line-height:1.25}
+a{color:inherit}
+.wrap{flex:1;padding-bottom:3rem}
+.con{max-width:48rem;margin:0 auto;padding:0 1rem}
+.con-w{max-width:64rem;margin:0 auto;padding:0 1rem}
+.hdr{background:#1F6F4A;color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.hdr-in{max-width:64rem;margin:0 auto;padding:0 1rem;height:3.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.hdr-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:#fff}
+.hdr-ico{width:2rem;height:2rem;border-radius:.5rem;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-name{font-family:'Lora',serif;font-weight:600;font-size:.875rem;line-height:1.2}
+.hdr-sub{font-size:.625rem;color:rgba(255,255,255,.45);line-height:1.2}
+.hdr-nav{display:flex;align-items:center;gap:.125rem}
+.hdr-nav a{padding:.375rem .75rem;border-radius:.5rem;font-size:.75rem;font-weight:500;text-decoration:none;color:rgba(255,255,255,.55);transition:background .15s,color .15s}
+.hdr-nav a:hover,.hdr-nav a.act{background:rgba(255,255,255,.2);color:#fff}
+.ftr{border-top:1px solid rgba(0,0,0,.08);padding:1.25rem 1rem}
+.ftr-in{max-width:64rem;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-size:.75rem;color:#7A7970}
+.crumb{display:flex;align-items:center;flex-wrap:wrap;gap:.25rem;padding:.75rem 0;font-size:.875rem}
+.crumb a{color:#7A7970;text-decoration:none}.crumb a:hover{text-decoration:underline;color:#2B2B28}
+.csep{color:rgba(0,0,0,.3);font-size:.75rem}.ccur{color:#2B2B28;font-weight:500}
+.stitle{font-size:1.5rem;margin-bottom:.25rem}
+.ssub{font-size:.875rem;color:#7A7970;margin-bottom:1.5rem}
+.hero{padding:3.5rem 1rem;text-align:center;color:#fff;background:linear-gradient(150deg,#164D34 0%,#1F6F4A 55%,#1A4B8A 100%)}
+.hero-eye{font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.22em;color:rgba(255,255,255,.45);margin-bottom:1rem}
+.hero-h1{font-family:'Lora',serif;font-size:2.25rem;font-weight:700;margin-bottom:1rem;line-height:1.2}
+.hero-p{font-size:.9375rem;color:rgba(255,255,255,.6);max-width:28rem;margin:0 auto 2.5rem;line-height:1.6}
+@media(max-width:640px){.hero-h1{font-size:1.75rem}}
+.grid{display:grid;gap:.75rem}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:640px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:.75rem;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:box-shadow .2s,transform .2s,border-color .2s;text-decoration:none;color:inherit;display:block;cursor:pointer}
+.card:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-2px);border-color:rgba(31,111,74,.3)}
+.card.disabled{opacity:.45;pointer-events:none;cursor:default}
+.cb{padding:1.25rem}.cb-xl{padding:1.5rem}
+.crow{display:flex;align-items:center;gap:1rem}
+.cchev{color:#7A7970;flex-shrink:0;transition:transform .2s,color .2s}.card:hover .cchev{transform:translateX(3px);color:#1F6F4A}
+.ncenter{display:flex;flex-direction:column;align-items:center;text-align:center;padding:1.5rem}
+.nico{width:3.5rem;height:3.5rem;border-radius:1rem;background:rgba(31,111,74,.1);display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.nabbr{font-family:'Lora',serif;font-size:1.875rem;font-weight:700}
+.nlbl{font-size:.875rem;color:#7A7970;margin-top:.25rem}
+.nsem{font-size:.75rem;color:rgba(122,121,112,.7);margin-top:.25rem;font-family:'JetBrains Mono',monospace}
+.chip{display:inline-block;background:rgba(31,111,74,.1);color:#1F6F4A;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;padding:.2rem .5rem;border-radius:.25rem;margin-bottom:.5rem}
+.sem-ico{width:3rem;height:3rem;border-radius:.75rem;background:#1F6F4A;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem;flex-shrink:0}
+.bdg{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:1.5rem;padding:0 .375rem;border-radius:.25rem;font-size:.75rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.bdg-v{background:#f0fdf4;color:#15803d;box-shadow:inset 0 0 0 1px #bbf7d0}
+.bdg-star{background:#fffbeb;color:#b45309;box-shadow:inset 0 0 0 1px #fde68a}
+.bdg-nv{background:#fef2f2;color:#b91c1c;box-shadow:inset 0 0 0 1px #fecaca}
+.sstrip{display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.sbox{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:.5rem;padding:.625rem 1rem;text-align:center}
+.sbox .sv{font-family:'JetBrains Mono',monospace;font-size:1.125rem;font-weight:700}
+.sbox .sl{font-size:.6875rem;color:#7A7970}
+.sbox-g{background:#f0fdf4;border-color:#dcfce7}.sbox-g .sv{color:#15803d}
+.sbox-r{background:#fef2f2;border-color:#fecaca}.sbox-r .sv{color:#b91c1c}
+.twrap{border-radius:.75rem;border:1px solid rgba(0,0,0,.08);overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+thead{background:#1F6F4A;color:#fff}
+th{padding:.75rem;font-size:.6875rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600;white-space:nowrap}
+td{padding:.75rem}
+tbody tr{border-top:1px solid rgba(0,0,0,.05);transition:background .1s}
+tbody tr:hover{background:rgba(0,0,0,.02)}
+tbody tr:nth-child(even){background:rgba(0,0,0,.015)}
+.tr{text-align:right}.tc{text-align:center}.tl{text-align:left}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#7A7970}
+.tftr{padding:.625rem 1rem;background:rgba(0,0,0,.02);border-top:1px solid rgba(0,0,0,.06);font-size:.75rem;color:#7A7970;display:flex;justify-content:space-between}
+.legend{display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;flex-wrap:wrap;font-size:.75rem;color:#7A7970}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.lswatch{width:1rem;height:1rem;border-radius:.25rem}
+.fpanel{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:.75rem;padding:1.25rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+@media(max-width:640px){.fgrid{grid-template-columns:repeat(2,1fr)}}
+.flbl{display:block;font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7A7970;margin-bottom:.375rem}
+.finput{width:100%;border:1px solid rgba(0,0,0,.1);border-radius:.5rem;padding:.625rem .875rem;font-size:.875rem;font-family:inherit;color:#2B2B28;background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.finput:focus{border-color:rgba(31,111,74,.4);box-shadow:0 0 0 3px rgba(31,111,74,.1)}
+.finput:disabled{opacity:.4;cursor:not-allowed;background:#F7F7F2}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:640px){.frow{grid-template-columns:1fr}}
+.flabel{display:block;font-size:.875rem;font-weight:500;margin-bottom:.375rem}
+.fgroup{margin-bottom:1rem}
+.btn{display:inline-flex;align-items:center;gap:.375rem;padding:.625rem 1rem;border-radius:.5rem;font-size:.875rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:opacity .15s;color:#fff;font-family:inherit}
+.btn:hover{opacity:.9}.btn-p{background:#1F6F4A}.btn-sm{padding:.375rem .75rem;font-size:.75rem}
+.srch-wrap{position:relative}
+.srch-input{width:100%;padding:.5rem 2rem .5rem 2rem;border:1px solid rgba(0,0,0,.08);border-radius:.5rem;font-size:.875rem;background:#fff;outline:none;font-family:inherit;color:#2B2B28}
+.srch-input:focus{border-color:rgba(31,111,74,.3);box-shadow:0 0 0 3px rgba(31,111,74,.1)}
+.srch-ico{position:absolute;left:.625rem;top:50%;transform:translateY(-50%);color:#7A7970;pointer-events:none}
+.profhdr{background:#1F6F4A;color:#fff;border-radius:.75rem;padding:1.25rem;margin-bottom:1.5rem}
+.prof-mat{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:rgba(255,255,255,.45);margin-bottom:.25rem}
+.prof-name{font-family:'Lora',serif;font-size:1.25rem;font-weight:700}
+.prof-fil{font-size:.875rem;color:rgba(255,255,255,.6);margin-top:.25rem}
+.semblk{margin-bottom:1.25rem}
+.sem-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7A7970;margin-bottom:.5rem}
+.uenum{width:1.75rem;height:1.75rem;border-radius:50%;background:#EDECE7;color:#7A7970;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:500;flex-shrink:0}
+.qtile{padding:1.25rem;display:flex;align-items:center;gap:1rem}
+.qtile-ico{width:2.5rem;height:2.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.unavail{font-size:.7rem;background:#EDECE7;color:#7A7970;padding:.15rem .5rem;border-radius:100px;white-space:nowrap}
+.err-box{text-align:center;padding:4rem 1rem;color:#7A7970}
+.success{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.75rem;padding:2.5rem 1.5rem;text-align:center}
+.success h3{color:#15803d;font-size:1.125rem;margin-bottom:.5rem}
+.success p{color:#16a34a;font-size:.875rem}
+.pbar{height:6px;background:#EDECE7;border-radius:3px;overflow:hidden;max-width:16rem}
+.pfill{height:100%;border-radius:3px}.pfill-g{background:#22c55e}.pfill-r{background:#f87171}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="index.html" class="hdr-logo">
+      <div class="hdr-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div><div class="hdr-name">Résultats ENA</div><div class="hdr-sub">École Nationale d'Administration · Bénin</div></div>
+    </a>
+    <nav class="hdr-nav">
+      <a href="index.html">Accueil</a>
+      <a href="recherche.html">Recherche</a>
+      <a href="releve.html">Mon Relevé</a>
+      <a href="contact.html" class="act">Contact</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <div class="con" style="padding-top:.5rem">
+    <nav class="crumb"><a href="index.html">Accueil</a><span class="csep">›</span><span class="ccur">Contact</span></nav>
+    <h2 class="stitle">Contact &amp; Signalement</h2>
+    <p class="ssub">Bureau des Études et de la Scolarité — ENA Cotonou</p>
+    <div class="fpanel" id="form-wrap">
+      <form onsubmit="submitForm(event)">
+        <div class="frow">
+          <div class="fgroup"><label class="flabel">Nom &amp; Prénoms *</label><input required class="finput" placeholder="MOUSSAVOU Alain"></div>
+          <div class="fgroup"><label class="flabel">Matricule</label><input class="finput" placeholder="ENA-2023-1000"></div>
+        </div>
+        <div class="fgroup"><label class="flabel">Objet *</label>
+          <select required class="finput"><option value="">Sélectionner…</option><option>Note incorrecte</option><option>Note manquante</option><option>Relevé incomplet</option><option>Problème d'accès</option><option>Autre</option></select>
+        </div>
+        <div class="fgroup"><label class="flabel">Message *</label><textarea required rows="4" class="finput" style="resize:none" placeholder="Décrivez le problème : année, niveau, filière, UE concernée…"></textarea></div>
+        <button type="submit" class="btn btn-p" style="width:100%;justify-content:center">Envoyer</button>
+      </form>
+    </div>
+    <div style="padding:1rem;background:rgba(0,0,0,.025);border-radius:.75rem;font-size:.875rem;color:#7A7970;border:1px solid rgba(0,0,0,.06)">
+      <div style="font-weight:500;color:#2B2B28;margin-bottom:.25rem">Coordonnées</div>
+      <div>École Nationale d'Administration · Cotonou, Bénin</div>
+      <div>Lundi – Vendredi, 8 h 00 – 15 h 30</div>
+    </div>
+  </div>
+</div>
+<footer class="ftr">
+  <div class="ftr-in">
+    <span>© 2026 École Nationale d'Administration — République du Bénin</span>
+    <span>Plateforme officielle de résultats académiques</span>
+  </div>
+</footer>
+<script>function submitForm(e){e.preventDefault();document.getElementById('form-wrap').innerHTML='<div class="success"><h3>Message envoyé avec succès</h3><p>Le Bureau des Études traitera votre demande sous 48 h ouvrables.</p></div>';}</script>
+</body>
+</html>

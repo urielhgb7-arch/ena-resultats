@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Recherche Directe & Avancée — Résultats ENA{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="{
+    annee: '',
+    niveau: '',
+    filiere: '',
+    semestre: '',
+    get isValid() { return this.annee && this.niveau && this.filiere; }
+}">
+    <!-- En-tête -->
+    <div>
+        <h1 class="font-serif text-2xl sm:text-3xl font-bold text-neutral-900 mb-1">
+            Recherche Directe
+        </h1>
+        <p class="text-sm text-[#7A7970]">
+            Sélectionnez une filière et un semestre pour accéder directement aux procès-verbaux de résultats.
+        </p>
+    </div>
+
+    <!-- Panel des Filtres en Cascade -->
+    <div class="bg-white border border-black/10 rounded-2xl p-6 shadow-sm space-y-6">
+        <form method="get" action="{% url 'resultats:recherche_avancee' %}">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- 1. Année Académique -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#7A7970] mb-1.5">
+                        Année Académique
+                    </label>
+                    <select name="annee_id"
+                            x-model="annee"
+                            hx-get="{% url 'filieres:ajax_niveaux' %}"
+                            hx-target="#select-niveau"
+                            hx-trigger="change"
+                            class="w-full border border-black/15 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:border-[#1F6F4A] focus:ring-2 focus:ring-[#1F6F4A]/20 focus:outline-none transition">
+                        <option value="">— Choisir —</option>
+                        {% for annee in annees %}
+                            <option value="{{ annee.id }}">{{ annee.libelle }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- 2. Niveau d'études -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#7A7970] mb-1.5">
+                        Niveau d'études
+                    </label>
+                    <select name="niveau_id"
+                            id="select-niveau"
+                            x-model="niveau"
+                            :disabled="!annee"
+                            hx-get="{% url 'filieres:ajax_filieres' %}"
+                            hx-target="#select-filiere"
+                            hx-trigger="change"
+                            class="w-full border border-black/15 rounded-xl px-3.5 py-2.5 text-sm bg-white disabled:bg-[#F7F7F2] disabled:opacity-50 focus:border-[#1F6F4A] focus:ring-2 focus:ring-[#1F6F4A]/20 focus:outline-none transition">
+                        <option value="">— Choisir un niveau —</option>
+                    </select>
+                </div>
+
+                <!-- 3. Filière -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#7A7970] mb-1.5">
+                        Filière
+                    </label>
+                    <select name="filiere_id"
+                            id="select-filiere"
+                            x-model="filiere"
+                            :disabled="!niveau"
+                            hx-get="{% url 'filieres:ajax_semestres' %}"
+                            hx-target="#select-semestre"
+                            hx-trigger="change"
+                            class="w-full border border-black/15 rounded-xl px-3.5 py-2.5 text-sm bg-white disabled:bg-[#F7F7F2] disabled:opacity-50 focus:border-[#1F6F4A] focus:ring-2 focus:ring-[#1F6F4A]/20 focus:outline-none transition">
+                        <option value="">— Choisir une filière —</option>
+                    </select>
+                </div>
+
+                <!-- 4. Semestre (Optionnel) -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#7A7970] mb-1.5">
+                        Semestre <span class="normal-case font-normal text-black/40">(optionnel)</span>
+                    </label>
+                    <select name="semestre_id"
+                            id="select-semestre"
+                            x-model="semestre"
+                            :disabled="!filiere"
+                            class="w-full border border-black/15 rounded-xl px-3.5 py-2.5 text-sm bg-white disabled:bg-[#F7F7F2] disabled:opacity-50 focus:border-[#1F6F4A] focus:ring-2 focus:ring-[#1F6F4A]/20 focus:outline-none transition">
+                        <option value="">Tous les semestres</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Bouton d'accès -->
+            <div class="mt-6 flex justify-end" x-show="isValid" x-cloak>
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-[#1F6F4A] hover:bg-[#164D34] text-white text-sm font-semibold px-6 py-3 rounded-xl shadow-sm transition">
+                    <span>Consulter les résultats</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- État vide explicatif -->
+    <div x-show="!isValid" class="bg-white/60 border border-black/10 rounded-2xl p-12 text-center text-[#7A7970] space-y-2">
+        <div class="text-4xl opacity-40">📂</div>
+        <div class="font-bold text-neutral-800 text-sm">Filtrez selon votre cursus</div>
+        <p class="text-xs text-[#7A7970] max-w-sm mx-auto">
+            Sélectionnez une année académique, un niveau d'études (L1, L2 ou L3) et votre filière pour charger directement les procès-verbaux de notes.
+        </p>
+    </div>
+</div>
+{% endblock %}

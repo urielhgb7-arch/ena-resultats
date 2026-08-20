@@ -3,26 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Résultats ENA{% endblock %}</title>
+    <title>{% block title %}Résultats ENA — École Nationale d'Administration{% endblock %}</title>
+    
+    <!-- Google Fonts: Lora (Display Titles), Inter (UI Body), JetBrains Mono (Code, Notes & IDs) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F7F7F2',
+                        foreground: '#2B2B28',
+                        ena: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#1F6F4A',
+                            900: '#164D34',
+                            950: '#0d3221',
+                        },
+                        navy: {
+                            700: '#1E5AA8',
+                            800: '#1A4B8A',
+                            900: '#0f2f5c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Lora', 'Georgia', 'serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                        display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #F7F7F2;
+            color: #2B2B28;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Lora', Georgia, serif;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+        }
+    </style>
+
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-neutral-50 text-neutral-800 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
 
     {% include "partials/header.html" %}
 
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6">
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6 sm:py-8">
         {% if breadcrumb %}
             {% include "partials/breadcrumb.html" %}
         {% endif %}
 
         {% for message in messages %}
-            <div class="mb-4 p-3 rounded-lg
-                {% if message.tags == 'error' %}bg-red-50 text-red-700
-                {% else %}bg-green-50 text-green-700{% endif %}">
-                {{ message }}
+            <div class="mb-4 p-4 rounded-xl text-sm font-medium shadow-sm flex items-center gap-2
+                {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200
+                {% elif message.tags == 'warning' %}bg-amber-50 text-amber-800 border border-amber-200
+                {% else %}bg-emerald-50 text-emerald-800 border border-emerald-200{% endif %}">
+                <span>{{ message }}</span>
             </div>
         {% endfor %}
 

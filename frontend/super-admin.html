@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniRésultats — Espace Super-administrateur</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: '#F4F3EF',
+            foreground: '#0D1425',
+            card: '#FFFFFF',
+            primary: '#5B21B6',
+            'primary-foreground': '#FFFFFF',
+            muted: '#ECEAE5',
+            'muted-foreground': '#6B7280',
+            border: '#E2E3EA',
+            'input-background': '#F0EEE9',
+            'switch-background': '#CBD5E1',
+            sidebar: '#0D1425',
+            'sidebar-foreground': '#EDE9F8',
+            'sidebar-accent': '#1A2440',
+            'sidebar-accent-foreground': '#EDE9F8',
+            'sidebar-border': '#1C2B44',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body, #root { height: 100%; margin: 0; }
+    body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: #F4F3EF; color: #0D1425; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+    select { appearance: auto; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel" data-presets="react">
+    const { useState } = React;
+
+    /* ── Icons ──────────────────────────────────────────────────────────── */
+    const PATHS = {
+      LayoutDashboard: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+      Users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      BookOpen: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+      Layers: '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+      Upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+      CheckSquare: '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+      Activity: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+      BarChart3: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+      Settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+      LogOut: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+      Bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+      Shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      Plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+      Search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+      Edit2: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+      Trash2: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+      CheckCircle: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
+      XCircle: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+      Globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+      AlertTriangle: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+      X: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+      Save: '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
+      User: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      Mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+      Key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+      ArrowUpRight: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+      ChevronLeft: '<path d="m15 18-6-6 6-6"/>',
+      Hash: '<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
+      Download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+    };
+
+    function Icon({ name, size = 16, className = '' }) {
+      const d = PATHS[name];
+      if (!d) return null;
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+          strokeLinejoin="round" className={className} dangerouslySetInnerHTML={{ __html: d }} />
+      );
+    }
+
+    /* ── Toast ──────────────────────────────────────────────────────────── */
+    let _push = () => {};
+    const toast = {
+      success: (m) => _push(m, 'success'),
+      error:   (m) => _push(m, 'error'),
+      info:    (m) => _push(m, 'info'),
+    };
+
+    function Toaster() {
+      const [list, setList] = useState([]);
+      _push = (msg, type) => {
+        const id = Date.now() + Math.random();
+        setList(p => [...p, { id, msg, type }]);
+        setTimeout(() => setList(p => p.filter(t => t.id !== id)), 3800);
+      };
+      const bg = { success: '#059669', error: '#DC2626', info: '#0D1425' };
+      return (
+        <div style={{ position:'fixed', top:16, right:16, zIndex:9999, display:'flex', flexDirection:'column', gap:8, pointerEvents:'none' }}>
+          {list.map(t => (
+            <div key={t.id} style={{ background: bg[t.type] || bg.info, color:'#fff', padding:'10px 16px', borderRadius:8, fontSize:13, fontWeight:500, boxShadow:'0 4px 16px rgba(0,0,0,0.18)', pointerEvents:'auto', maxWidth:320 }}>
+              {t.msg}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    /* ── Mock data ──────────────────────────────────────────────────────── */
+    const INITIAL_ACCOUNTS = [
+      { id:1, name:'Sophie Marchand',    email:'s.marchand@univ-paris.fr',  role:'super-admin', status:'active',   lastLogin:'14 jan. 2025, 09:32' },
+      { id:2, name:'Laurent Dubois',     email:'l.dubois@univ-paris.fr',    role:'validateur',  status:'active',   lastLogin:'14 jan. 2025, 08:15' },
+      { id:3, name:'Marie-Claire Perrin',email:'mc.perrin@univ-paris.fr',   role:'validateur',  status:'active',   lastLogin:'13 jan. 2025, 16:44' },
+      { id:4, name:'Pierre Arnaud',      email:'p.arnaud@univ-paris.fr',    role:'validateur',  status:'inactive', lastLogin:'30 nov. 2024, 10:20' },
+      { id:5, name:'Nathalie Lebrun',    email:'n.lebrun@univ-paris.fr',    role:'validateur',  status:'active',   lastLogin:'14 jan. 2025, 07:58' },
+      { id:6, name:'Éric Fontaine',      email:'e.fontaine@univ-paris.fr',  role:'super-admin', status:'active',   lastLogin:'13 jan. 2025, 22:05' },
+      { id:7, name:'Isabelle Morel',     email:'i.morel@univ-paris.fr',     role:'validateur',  status:'active',   lastLogin:'12 jan. 2025, 14:30' },
+      { id:8, name:'Thomas Bernard',     email:'t.bernard@univ-paris.fr',   role:'visiteur',    status:'inactive', lastLogin:'15 sep. 2024, 09:10' },
+    ];
+
+    const ACTIVITY_LOG = [
+      { id:1,  ts:'14/01 09:47:23', author:'S. Marchand',   role:'super-admin', action:'PUBLICATION',   entity:'Résultats L3 Info — S5 2024',             ip:'192.168.1.42' },
+      { id:2,  ts:'14/01 09:32:10', author:'S. Marchand',   role:'super-admin', action:'CONNEXION',     entity:'—',                                        ip:'192.168.1.42' },
+      { id:3,  ts:'14/01 08:55:44', author:'L. Dubois',     role:'validateur',  action:'IMPORT',        entity:'résultats_l1_math_s1.csv (234 lignes)',     ip:'10.0.0.17'   },
+      { id:4,  ts:'14/01 08:20:11', author:'N. Lebrun',     role:'validateur',  action:'MODIFICATION',  entity:'UE MAT201 — coeff. 3 → 4',                 ip:'10.0.1.55'   },
+      { id:5,  ts:'13/01 22:05:38', author:'É. Fontaine',   role:'super-admin', action:'CONNEXION',     entity:'—',                                        ip:'91.121.44.12'},
+      { id:6,  ts:'13/01 16:44:22', author:'M.-C. Perrin',  role:'validateur',  action:'VALIDATION',    entity:'Import #0047 — L2 Physique S3',            ip:'10.0.2.30'   },
+      { id:7,  ts:'13/01 15:10:05', author:'É. Fontaine',   role:'super-admin', action:'MODIF. RÔLE',   entity:'T. Bernard → Visiteur',                    ip:'91.121.44.12'},
+      { id:8,  ts:'13/01 14:33:51', author:'L. Dubois',     role:'validateur',  action:'IMPORT',        entity:'résultats_l3_info_s5.csv (487 lignes)',     ip:'10.0.0.17'   },
+      { id:9,  ts:'13/01 11:22:40', author:'M.-C. Perrin',  role:'validateur',  action:'SUPPRESSION',   entity:'Import #0038 (doublons détectés)',          ip:'10.0.2.30'   },
+      { id:10, ts:'13/01 09:15:17', author:'S. Marchand',   role:'super-admin', action:'PARAMÈTRE',     entity:'Mode recherche : Nom/Prénom activé',       ip:'192.168.1.42' },
+      { id:11, ts:'12/01 17:48:33', author:'I. Morel',      role:'validateur',  action:'CONNEXION',     entity:'—',                                        ip:'10.0.3.88'   },
+      { id:12, ts:'12/01 14:30:55', author:'I. Morel',      role:'validateur',  action:'IMPORT',        entity:'résultats_l1_svt_s1.csv (423 lignes)',      ip:'10.0.3.88'   },
+      { id:13, ts:'12/01 14:05:20', author:'N. Lebrun',     role:'validateur',  action:'PUBLICATION',   entity:'Résultats L1 SVT — S1 2024',               ip:'10.0.1.55'   },
+      { id:14, ts:'11/01 10:30:00', author:'S. Marchand',   role:'super-admin', action:'CRÉATION',      entity:'I. Morel <i.morel@univ-paris.fr>',         ip:'192.168.1.42' },
+      { id:15, ts:'10/01 16:20:44', author:'L. Dubois',     role:'validateur',  action:'CONNEXION',     entity:'—',                                        ip:'10.0.0.17'   },
+    ];
+
+    const STATS_FILIERES = [
+      { filiere:'Informatique',  publies:487, attente:23 },
+      { filiere:'Mathématiques', publies:312, attente:8  },
+      { filiere:'Physique',      publies:276, attente:15 },
+      { filiere:'Chimie',        publies:198, attente:31 },
+      { filiere:'SVT',           publies:423, attente:12 },
+      { filiere:'Lettres',       publies:151, attente:5  },
+    ];
+
+    const STATS_IMPORTS = [
+      { mois:'Sep', imports:8,  lignes:1840 },
+      { mois:'Oct', imports:12, lignes:2760 },
+      { mois:'Nov', imports:15, lignes:3420 },
+      { mois:'Déc', imports:6,  lignes:1380 },
+      { mois:'Jan', imports:23, lignes:5290 },
+    ];
+
+    const VALIDATORS_STATS = [
+      { name:'L. Dubois',     imports:12, publications:8,  validations:15 },
+      { name:'M.-C. Perrin',  imports:7,  publications:5,  validations:9  },
+      { name:'N. Lebrun',     imports:9,  publications:11, validations:14 },
+      { name:'I. Morel',      imports:5,  publications:4,  validations:6  },
+    ];
+
+    /* ── Shared badges ──────────────────────────────────────────────────── */
+    function RoleBadge({ role }) {
+      const cfg = {
+        'super-admin': 'background:#EDE9F8;color:#5B21B6;border:1px solid #C4B5FD',
+        'validateur':  'background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE',
+        'visiteur':    'background:#F3F4F6;color:#6B7280;border:1px solid #E5E7EB',
+      }[role] || 'background:#F3F4F6;color:#6B7280;border:1px solid #E5E7EB';
+      const label = { 'super-admin':'Super-admin', 'validateur':'Validateur', 'visiteur':'Visiteur' }[role] || role;
+      return (
+        <span style={{ display:'inline-flex', alignItems:'center', gap:4, padding:'2px 7px', borderRadius:4, fontSize:11, fontWeight:500, ...Object.fromEntries(cfg.split(';').map(s => { const [k,v]=s.split(':'); return [k?.trim().replace(/-([a-z])/g,(_,c)=>c.toUpperCase()),v?.trim()]; }).filter(([k])=>k)) }}>
+          {role === 'super-admin' && <Icon name="Shield" size={10} />}
+          {label}
+        </span>
+      );
+    }
+
+    function StatusBadge({ status }) {
+      return status === 'active'
+        ? <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:12,color:'#059669'}}><Icon name="CheckCircle" size={12}/>Actif</span>
+        : <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:12,color:'#9CA3AF'}}><Icon name="XCircle" size={12}/>Inactif</span>;
+    }
+
+    function ActionBadge({ action }) {
+      const colors = { 'CONNEXION':'#9CA3AF','PUBLICATION':'#059669','IMPORT':'#2563EB','MODIFICATION':'#D97706','SUPPRESSION':'#DC2626','VALIDATION':'#059669','MODIF. RÔLE':'#7C3AED','PARAMÈTRE':'#7C3AED','CRÉATION':'#7C3AED' };
+      return <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, fontWeight:500, letterSpacing:'0.04em', color: colors[action] || '#0D1425' }}>{action}</span>;
+    }
+
+    function StatCard({ label, value, delta, deltaLabel, color='violet' }) {
+      const bars = { violet:'#7C3AED', blue:'#2563EB', emerald:'#059669', amber:'#D97706' };
+      return (
+        <div style={{ background:'#fff', border:'1px solid #E2E3EA', borderRadius:8, overflow:'hidden' }}>
+          <div style={{ height:4, background: bars[color] || bars.violet }} />
+          <div style={{ padding:'16px 20px' }}>
+            <p style={{ fontSize:10, color:'#6B7280', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:6 }}>{label}</p>
+            <p style={{ fontSize:28, fontWeight:600, marginBottom:4, fontVariantNumeric:'tabular-nums' }}>{value}</p>
+            {delta
+              ? <p style={{ fontSize:11, color:'#6B7280', display:'flex', alignItems:'center', gap:4 }}>
+                  <Icon name="ArrowUpRight" size={12} className="text-emerald-600" style={{color:'#059669'}} />
+                  <span style={{color:'#059669',fontWeight:500}}>{delta}</span>
+                  {deltaLabel && <span>{deltaLabel}</span>}
+                </p>
+              : <p style={{fontSize:11,color:'transparent'}}>—</p>}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Custom charts ──────────────────────────────────────────────────── */
+    function GroupedBarChart({ data, xKey, series, height=200 }) {
+      const allVals = data.flatMap(d => series.map(s => Number(d[s.key] ?? 0)));
+      const max = Math.max(...allVals, 1);
+      const barH = height - 32;
+      return (
+        <div style={{ height, display:'flex', flexDirection:'column', userSelect:'none' }}>
+          <div style={{ display:'flex', alignItems:'flex-end', gap:4, flex:1, minHeight:0 }}>
+            {data.map(d => (
+              <div key={String(d[xKey])} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center' }}>
+                <div style={{ display:'flex', alignItems:'flex-end', gap:1, width:'100%', justifyContent:'center', height:barH }}>
+                  {series.map(s => {
+                    const v = Number(d[s.key] ?? 0);
+                    return (
+                      <div key={s.key} title={`${s.label}: ${v}`}
+                        style={{ flex:1, minWidth:5, maxWidth:22, borderRadius:'3px 3px 0 0', height:`${(v/max)*100}%`, background:s.color, transition:'opacity 0.15s', cursor:'default' }}
+                        onMouseEnter={e=>e.currentTarget.style.opacity='0.75'}
+                        onMouseLeave={e=>e.currentTarget.style.opacity='1'} />
+                    );
+                  })}
+                </div>
+                <span style={{ fontSize:10, color:'#6B7280', marginTop:6, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', width:'100%', textAlign:'center' }}>{d[xKey]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function SimpleLineChart({ data, xKey, series, height=200 }) {
+      const PAD = { t:10, r:16, b:24, l:28 };
+      const VW=400, VH=height;
+      const cW=VW-PAD.l-PAD.r, cH=VH-PAD.t-PAD.b;
+      const allVals = data.flatMap(d => series.map(s => Number(d[s.key] ?? 0)));
+      const max = Math.max(...allVals, 1);
+      const n = data.length;
+      const px = i => PAD.l + (n < 2 ? cW/2 : (i/(n-1))*cW);
+      const py = v => PAD.t + cH - (v/max)*cH;
+      return (
+        <svg viewBox={`0 0 ${VW} ${VH}`} width="100%" height={height} style={{overflow:'visible'}}>
+          {[0,0.25,0.5,0.75,1].map(t => (
+            <line key={t} x1={PAD.l} x2={VW-PAD.r} y1={PAD.t+cH*(1-t)} y2={PAD.t+cH*(1-t)} stroke="rgba(0,0,0,0.06)" strokeDasharray="3 3" />
+          ))}
+          {series.map(s => (
+            <polyline key={s.key} points={data.map((d,i)=>`${px(i)},${py(Number(d[s.key]??0))}`).join(' ')}
+              fill="none" stroke={s.color} strokeWidth={2} strokeDasharray={s.dash} />
+          ))}
+          {series.map(s => data.map((d,i) => (
+            <circle key={`${s.key}-${i}`} cx={px(i)} cy={py(Number(d[s.key]??0))} r={3.5} fill={s.color} />
+          )))}
+          {data.map((d,i) => (
+            <text key={String(d[xKey])} x={px(i)} y={VH-4} textAnchor="middle" fontSize={11} fill="#6B7280">{d[xKey]}</text>
+          ))}
+        </svg>
+      );
+    }
+
+    /* ── Sidebar ────────────────────────────────────────────────────────── */
+    const NAV_GENERAL  = [{ id:'dashboard', label:'Tableau de bord',    icon:'LayoutDashboard' }];
+    const NAV_ACADEMIC = [
+      { id:'_academic', label:'Référentiel', icon:'BookOpen'    },
+      { id:'_academic', label:'UE / EC',     icon:'Layers'      },
+      { id:'_academic', label:'Imports',     icon:'Upload'      },
+      { id:'_academic', label:'Validation',  icon:'CheckSquare' },
+    ];
+    const NAV_SUPER = [
+      { id:'accounts',         label:'Comptes & Rôles',    icon:'Users'    },
+      { id:'activity',         label:"Journal d'activité", icon:'Activity' },
+      { id:'statistics',       label:'Statistiques',       icon:'BarChart3'},
+      { id:'settings-search',  label:'Paramètres du site', icon:'Settings' },
+    ];
+
+    function Sidebar({ active, onNavigate, onPlaceholder }) {
+      const isActive = id => active === id || (id==='settings-search' && active==='settings-general');
+      const Item = ({ id, label, icon, superAdmin=false, onClick }) => {
+        const act = isActive(id);
+        const bg  = act ? (superAdmin ? 'rgba(124,58,237,0.18)' : '#1A2440') : 'transparent';
+        const col = act ? (superAdmin ? '#C4B5FD' : '#EDE9F8') : 'rgba(237,233,248,0.5)';
+        return (
+          <button onClick={onClick || (() => onNavigate(id))}
+            style={{ width:'100%',display:'flex',alignItems:'center',gap:10,padding:'7px 10px',borderRadius:6,background:bg,color:col,border:'none',cursor:'pointer',fontSize:13,textAlign:'left',transition:'background 0.15s,color 0.15s' }}
+            onMouseEnter={e=>{if(!act){e.currentTarget.style.background='rgba(26,36,64,0.6)';e.currentTarget.style.color='#EDE9F8';}}}
+            onMouseLeave={e=>{if(!act){e.currentTarget.style.background='transparent';e.currentTarget.style.color='rgba(237,233,248,0.5)';}}}
+          >
+            <Icon name={icon} size={15} />
+            <span>{label}</span>
+          </button>
+        );
+      };
+      return (
+        <aside style={{ width:240,flexShrink:0,display:'flex',flexDirection:'column',background:'#0D1425',borderRight:'1px solid #1C2B44',height:'100%' }}>
+          {/* Logo */}
+          <div style={{ padding:'20px 16px 14px', borderBottom:'1px solid #1C2B44' }}>
+            <div style={{ display:'flex',alignItems:'center',gap:10,marginBottom:10 }}>
+              <div style={{ width:32,height:32,borderRadius:6,background:'#7C3AED',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
+                <Icon name="BookOpen" size={15} style={{color:'#fff'}} className="text-white" />
+              </div>
+              <div>
+                <p style={{ color:'#EDE9F8',fontWeight:600,fontSize:13,lineHeight:1 }}>UniRésultats</p>
+                <p style={{ color:'rgba(237,233,248,0.35)',fontSize:11,marginTop:2 }}>Portail académique</p>
+              </div>
+            </div>
+            <div style={{ display:'flex',alignItems:'center',gap:6,padding:'6px 10px',borderRadius:6,background:'rgba(124,58,237,0.18)',border:'1px solid rgba(124,58,237,0.3)' }}>
+              <Icon name="Shield" size={11} style={{color:'#A78BFA',flexShrink:0}} />
+              <span style={{ fontSize:11,color:'#C4B5FD',fontWeight:500 }}>Super-administrateur</span>
+            </div>
+          </div>
+
+          {/* Nav */}
+          <nav style={{ flex:1,overflowY:'auto',padding:'14px 10px',display:'flex',flexDirection:'column',gap:18 }}>
+            <div>
+              <p style={{ fontSize:10,color:'rgba(237,233,248,0.25)',textTransform:'uppercase',letterSpacing:'0.08em',padding:'0 10px',marginBottom:6 }}>Général</p>
+              <div style={{ display:'flex',flexDirection:'column',gap:2 }}>
+                {NAV_GENERAL.map(it => <Item key={it.id} {...it} />)}
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize:10,color:'rgba(237,233,248,0.25)',textTransform:'uppercase',letterSpacing:'0.08em',padding:'0 10px',marginBottom:6 }}>Académique</p>
+              <div style={{ display:'flex',flexDirection:'column',gap:2 }}>
+                {NAV_ACADEMIC.map((it,i) => <Item key={i} {...it} onClick={onPlaceholder} />)}
+              </div>
+            </div>
+            <div>
+              <div style={{ display:'flex',alignItems:'center',gap:6,padding:'0 10px',marginBottom:6 }}>
+                <Icon name="Shield" size={10} style={{color:'rgba(167,139,250,0.7)'}} />
+                <p style={{ fontSize:10,color:'rgba(167,139,250,0.7)',textTransform:'uppercase',letterSpacing:'0.08em' }}>Super-admin</p>
+              </div>
+              <div style={{ display:'flex',flexDirection:'column',gap:2,borderLeft:'2px solid rgba(124,58,237,0.25)',marginLeft:8,paddingLeft:4 }}>
+                {NAV_SUPER.map(it => <Item key={it.id} {...it} superAdmin />)}
+              </div>
+            </div>
+          </nav>
+
+          {/* User */}
+          <div style={{ padding:'12px 14px',borderTop:'1px solid #1C2B44' }}>
+            <div style={{ display:'flex',alignItems:'center',gap:10 }}>
+              <div style={{ width:32,height:32,borderRadius:'50%',background:'#7C3AED',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:12,fontWeight:700,flexShrink:0 }}>SM</div>
+              <div style={{ flex:1,minWidth:0 }}>
+                <p style={{ color:'#EDE9F8',fontSize:13,fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>Sophie Marchand</p>
+                <p style={{ color:'rgba(237,233,248,0.35)',fontSize:11,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>s.marchand@univ-paris.fr</p>
+              </div>
+              <button style={{ background:'none',border:'none',cursor:'pointer',color:'rgba(237,233,248,0.35)',padding:4 }}
+                onMouseEnter={e=>e.currentTarget.style.color='rgba(237,233,248,0.7)'}
+                onMouseLeave={e=>e.currentTarget.style.color='rgba(237,233,248,0.35)'}>
+                <Icon name="LogOut" size={14} />
+              </button>
+            </div>
+          </div>
+        </aside>
+      );
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    function Header({ title, actions }) {
+      return (
+        <header style={{ height:64,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 24px',borderBottom:'1px solid #E2E3EA',background:'#fff',flexShrink:0 }}>
+          <h1 style={{ fontFamily:'"DM Serif Display",Georgia,serif',fontSize:20,fontWeight:400,margin:0 }}>{title}</h1>
+          <div style={{ display:'flex',alignItems:'center',gap:10 }}>
+            {actions}
+            <button style={{ position:'relative',padding:7,borderRadius:6,background:'none',border:'none',cursor:'pointer',color:'#6B7280' }}>
+              <Icon name="Bell" size={15} />
+              <span style={{ position:'absolute',top:6,right:6,width:6,height:6,borderRadius:'50%',background:'#7C3AED' }} />
+            </button>
+          </div>
+        </header>
+      );
+    }
+
+    /* ── Dashboard ──────────────────────────────────────────────────────── */
+    function DashboardView({ onNavigate }) {
+      const [alertVisible, setAlertVisible] = useState(true);
+      return (
+        <div style={{ display:'flex',flexDirection:'column',gap:20 }}>
+          {alertVisible && (
+            <div style={{ display:'flex',alignItems:'flex-start',gap:10,padding:14,borderRadius:8,background:'#FFFBEB',border:'1px solid #FDE68A',color:'#92400E' }}>
+              <Icon name="AlertTriangle" size={15} style={{marginTop:2,flexShrink:0,color:'#D97706'}} />
+              <div style={{ flex:1 }}>
+                <p style={{ fontSize:13,fontWeight:500,marginBottom:3 }}>Import en attente de validation — 3 jours</p>
+                <p style={{ fontSize:12,color:'#B45309' }}>L'import #0049 (31 résultats, filière Chimie) nécessite une revue.{' '}
+                  <button onClick={() => onNavigate('activity')} style={{ background:'none',border:'none',cursor:'pointer',color:'inherit',fontWeight:600,textDecoration:'underline',padding:0,fontSize:'inherit' }}>Voir le journal</button>
+                </p>
+              </div>
+              <button onClick={() => setAlertVisible(false)} style={{ background:'none',border:'none',cursor:'pointer',color:'#D97706',padding:2 }}><Icon name="X" size={14} /></button>
+            </div>
+          )}
+
+          <div style={{ display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14 }}>
+            <StatCard label="Résultats publiés"     value="1 847" delta="+12" deltaLabel="cette semaine" color="violet" />
+            <StatCard label="Comptes actifs"         value="6"                                            color="blue"   />
+            <StatCard label="Imports ce mois"        value="23"    delta="+8"  deltaLabel="vs. mois dernier" color="emerald" />
+            <StatCard label="En attente validation"  value="3"                                            color="amber"  />
+          </div>
+
+          <div style={{ display:'grid',gridTemplateColumns:'2fr 1fr',gap:16 }}>
+            <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,padding:20 }}>
+              <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14 }}>
+                <p style={{ fontSize:13,fontWeight:600 }}>Résultats par filière</p>
+                <div style={{ display:'flex',gap:12 }}>
+                  <span style={{ display:'flex',alignItems:'center',gap:5,fontSize:11,color:'#6B7280' }}><span style={{ width:10,height:10,borderRadius:2,background:'#7C3AED',display:'inline-block' }}/>Publiés</span>
+                  <span style={{ display:'flex',alignItems:'center',gap:5,fontSize:11,color:'#6B7280' }}><span style={{ width:10,height:10,borderRadius:2,background:'#DDD6FE',display:'inline-block' }}/>En attente</span>
+                </div>
+              </div>
+              <GroupedBarChart data={STATS_FILIERES} xKey="filiere" series={[{key:'publies',color:'#7C3AED',label:'Publiés'},{key:'attente',color:'#DDD6FE',label:'En attente'}]} height={190} />
+            </div>
+
+            <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,padding:20 }}>
+              <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14 }}>
+                <p style={{ fontSize:13,fontWeight:600 }}>Activité récente</p>
+                <button onClick={() => onNavigate('activity')} style={{ fontSize:11,color:'#7C3AED',fontWeight:500,background:'none',border:'none',cursor:'pointer',padding:0 }}>Tout voir →</button>
+              </div>
+              <div style={{ display:'flex',flexDirection:'column',gap:12 }}>
+                {ACTIVITY_LOG.slice(0,6).map(e => (
+                  <div key={e.id} style={{ display:'flex',alignItems:'flex-start',gap:8 }}>
+                    <span style={{ width:6,height:6,borderRadius:'50%',background:'#A78BFA',flexShrink:0,marginTop:4 }} />
+                    <div style={{ minWidth:0 }}>
+                      <p style={{ fontSize:11,lineHeight:1.4,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>
+                        <strong>{e.author}</strong> — <ActionBadge action={e.action} />
+                      </p>
+                      <p style={{ fontSize:10,color:'#6B7280',fontFamily:'JetBrains Mono,monospace',marginTop:2 }}>{e.ts}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Accounts ───────────────────────────────────────────────────────── */
+    function AccountsView({ accounts, onEdit, onNew, onDelete }) {
+      const [search, setSearch]   = useState('');
+      const [roleF,  setRoleF]    = useState('all');
+      const [delId,  setDelId]    = useState(null);
+
+      const filtered = accounts.filter(a => {
+        const q = search.toLowerCase();
+        return (a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q))
+          && (roleF === 'all' || a.role === roleF);
+      });
+
+      const initials = name => name.split(' ').map(n=>n[0]).join('').slice(0,2);
+      const avatarBg = role => role === 'super-admin' ? '#EDE9F8' : '#EFF6FF';
+      const avatarFg = role => role === 'super-admin' ? '#5B21B6'  : '#1D4ED8';
+
+      const th = { fontSize:11, color:'#6B7280', fontWeight:500, textTransform:'uppercase', letterSpacing:'0.05em', textAlign:'left', padding:'10px 14px', borderBottom:'1px solid #E2E3EA' };
+      const td = { padding:'11px 14px', fontSize:13, borderBottom:'1px solid #E2E3EA', verticalAlign:'middle' };
+
+      return (
+        <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
+          <div style={{ display:'flex',alignItems:'center',gap:10,flexWrap:'wrap' }}>
+            <div style={{ position:'relative', flex:1, minWidth:160, maxWidth:280 }}>
+              <span style={{ position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',pointerEvents:'none' }}><Icon name="Search" size={13}/></span>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher un compte…"
+                style={{ width:'100%',paddingLeft:32,paddingRight:10,paddingTop:8,paddingBottom:8,fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',outline:'none' }} />
+            </div>
+            <select value={roleF} onChange={e=>setRoleF(e.target.value)}
+              style={{ padding:'8px 10px',fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',cursor:'pointer' }}>
+              <option value="all">Tous les rôles</option>
+              <option value="super-admin">Super-admin</option>
+              <option value="validateur">Validateur</option>
+              <option value="visiteur">Visiteur</option>
+            </select>
+            <button onClick={onNew}
+              style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 14px',background:'#5B21B6',color:'#fff',border:'none',borderRadius:6,fontSize:13,fontWeight:500,cursor:'pointer',marginLeft:'auto' }}>
+              <Icon name="Plus" size={13}/> Nouveau compte
+            </button>
+          </div>
+
+          <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,overflow:'hidden' }}>
+            <table style={{ width:'100%',borderCollapse:'collapse' }}>
+              <thead>
+                <tr style={{ background:'#F9F8F5' }}>
+                  {['Nom','Email','Rôle','Statut','Dernière connexion',''].map(h=><th key={h} style={th}>{h}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((a,i) => (
+                  <tr key={a.id} style={{ background: i%2===1 ? '#FAFAF8' : '#fff' }}>
+                    <td style={td}>
+                      <div style={{ display:'flex',alignItems:'center',gap:8 }}>
+                        <div style={{ width:28,height:28,borderRadius:'50%',background:avatarBg(a.role),color:avatarFg(a.role),display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,flexShrink:0 }}>{initials(a.name)}</div>
+                        <span style={{fontWeight:500}}>{a.name}</span>
+                      </div>
+                    </td>
+                    <td style={{...td,fontFamily:'JetBrains Mono,monospace',fontSize:11,color:'#6B7280'}}>{a.email}</td>
+                    <td style={td}><RoleBadge role={a.role}/></td>
+                    <td style={td}><StatusBadge status={a.status}/></td>
+                    <td style={{...td,fontSize:12,color:'#6B7280',whiteSpace:'nowrap'}}>{a.lastLogin}</td>
+                    <td style={{...td,textAlign:'right'}}>
+                      {delId===a.id ? (
+                        <span style={{fontSize:12,display:'flex',alignItems:'center',gap:6,justifyContent:'flex-end'}}>
+                          <span style={{color:'#DC2626'}}>Supprimer ?</span>
+                          <button onClick={()=>{onDelete(a.id);setDelId(null);toast.success('Compte supprimé.');}} style={{color:'#DC2626',fontWeight:600,background:'none',border:'none',cursor:'pointer',fontSize:12}}>Oui</button>
+                          <button onClick={()=>setDelId(null)} style={{color:'#6B7280',background:'none',border:'none',cursor:'pointer',fontSize:12}}>Non</button>
+                        </span>
+                      ) : (
+                        <span style={{display:'flex',alignItems:'center',gap:2,justifyContent:'flex-end'}}>
+                          <button onClick={()=>onEdit(a)} style={{padding:5,borderRadius:4,background:'none',border:'none',cursor:'pointer',color:'#6B7280'}} title="Modifier"><Icon name="Edit2" size={13}/></button>
+                          <button onClick={()=>setDelId(a.id)} style={{padding:5,borderRadius:4,background:'none',border:'none',cursor:'pointer',color:'#6B7280'}} title="Supprimer"><Icon name="Trash2" size={13}/></button>
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {filtered.length===0 && <p style={{textAlign:'center',padding:40,color:'#6B7280',fontSize:13}}>Aucun compte correspondant.</p>}
+          </div>
+          <p style={{fontSize:11,color:'#6B7280'}}>{filtered.length} compte{filtered.length>1?'s':''} affiché{filtered.length>1?'s':''}</p>
+        </div>
+      );
+    }
+
+    /* ── Account form ───────────────────────────────────────────────────── */
+    function AccountFormView({ account, onBack }) {
+      const isNew = account === null;
+      const [name,   setName]   = useState(account?.name   ?? '');
+      const [email,  setEmail]  = useState(account?.email  ?? '');
+      const [role,   setRole]   = useState(account?.role   ?? 'validateur');
+      const [status, setStatus] = useState(account?.status ?? 'active');
+
+      const save = () => {
+        if (!name.trim() || !email.trim()) { toast.error('Veuillez remplir les champs obligatoires.'); return; }
+        toast.success(isNew ? 'Compte créé.' : 'Modifications enregistrées.');
+        onBack();
+      };
+
+      const ROLES = [
+        { value:'visiteur',    label:'Visiteur',             desc:'Accès en lecture seule aux données publiées.' },
+        { value:'validateur',  label:'Validateur',           desc:'Peut importer, modifier et publier des résultats.' },
+        { value:'super-admin', label:'Super-administrateur', desc:'Accès complet, y compris la gestion des comptes et paramètres du site.' },
+      ];
+
+      const field = { width:'100%',padding:'9px 12px',fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#F0EEE9',outline:'none' };
+
+      return (
+        <div style={{ maxWidth:500,display:'flex',flexDirection:'column',gap:16 }}>
+          <button onClick={onBack} style={{ display:'flex',alignItems:'center',gap:5,fontSize:13,color:'#6B7280',background:'none',border:'none',cursor:'pointer',padding:0 }}>
+            <Icon name="ChevronLeft" size={14}/> Retour à la liste des comptes
+          </button>
+
+          <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,overflow:'hidden' }}>
+            <div style={{ padding:22,display:'flex',flexDirection:'column',gap:16 }}>
+              <h2 style={{ fontFamily:'"DM Serif Display",Georgia,serif',fontSize:18,fontWeight:400,margin:0 }}>
+                {isNew ? 'Créer un compte' : 'Modifier le compte'}
+              </h2>
+
+              <div>
+                <label style={{ display:'block',fontSize:13,fontWeight:500,marginBottom:6 }}>Nom complet <span style={{color:'#DC2626'}}>*</span></label>
+                <div style={{ position:'relative' }}>
+                  <span style={{ position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF' }}><Icon name="User" size={13}/></span>
+                  <input value={name} onChange={e=>setName(e.target.value)} placeholder="Prénom Nom" style={{...field,paddingLeft:32}} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display:'block',fontSize:13,fontWeight:500,marginBottom:6 }}>Adresse e-mail <span style={{color:'#DC2626'}}>*</span></label>
+                <div style={{ position:'relative' }}>
+                  <span style={{ position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF' }}><Icon name="Mail" size={13}/></span>
+                  <input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="prenom.nom@univ-paris.fr" style={{...field,paddingLeft:32}} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display:'block',fontSize:13,fontWeight:500,marginBottom:8 }}>Rôle</label>
+                <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
+                  {ROLES.map(r => (
+                    <label key={r.value} style={{ display:'flex',alignItems:'flex-start',gap:10,padding:'10px 12px',borderRadius:6,border:`1px solid ${role===r.value?'#A78BFA':'#E2E3EA'}`,background:role===r.value?'rgba(237,233,248,0.6)':'#fff',cursor:'pointer' }}>
+                      <input type="radio" name="role" value={r.value} checked={role===r.value} onChange={()=>setRole(r.value)} style={{marginTop:2,accentColor:'#7C3AED'}} />
+                      <div>
+                        <div style={{ display:'flex',alignItems:'center',gap:6,fontSize:13,fontWeight:500 }}>
+                          {r.label}
+                          {r.value==='super-admin' && <Icon name="Shield" size={11} style={{color:'#7C3AED'}} />}
+                        </div>
+                        <p style={{ fontSize:11,color:'#6B7280',marginTop:2 }}>{r.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display:'block',fontSize:13,fontWeight:500,marginBottom:6 }}>Statut</label>
+                <select value={status} onChange={e=>setStatus(e.target.value)} style={field}>
+                  <option value="active">Actif</option>
+                  <option value="inactive">Inactif</option>
+                </select>
+              </div>
+            </div>
+
+            {!isNew && (
+              <div style={{ padding:'14px 22px',borderTop:'1px solid #E2E3EA' }}>
+                <p style={{ fontSize:11,color:'#6B7280',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:8 }}>Actions de sécurité</p>
+                <button onClick={()=>toast.success('Un e-mail de réinitialisation a été envoyé.')}
+                  style={{ display:'flex',alignItems:'center',gap:7,padding:'7px 12px',fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',cursor:'pointer' }}>
+                  <Icon name="Key" size={13}/> Envoyer un lien de réinitialisation
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div style={{ display:'flex',gap:10 }}>
+            <button onClick={save} style={{ display:'flex',alignItems:'center',gap:6,padding:'9px 18px',background:'#5B21B6',color:'#fff',border:'none',borderRadius:6,fontSize:13,fontWeight:500,cursor:'pointer' }}>
+              <Icon name="Save" size={13}/> {isNew ? 'Créer le compte' : 'Enregistrer'}
+            </button>
+            <button onClick={onBack} style={{ padding:'9px 14px',fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',cursor:'pointer',color:'#6B7280' }}>Annuler</button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Activity log ───────────────────────────────────────────────────── */
+    function ActivityLogView() {
+      const [search,  setSearch]  = useState('');
+      const [actionF, setActionF] = useState('all');
+      const [roleF,   setRoleF]   = useState('all');
+      const [page,    setPage]    = useState(1);
+      const PER = 8;
+
+      const actions = [...new Set(ACTIVITY_LOG.map(e=>e.action))];
+      const filtered = ACTIVITY_LOG.filter(e => {
+        const q=search.toLowerCase();
+        return (e.author.toLowerCase().includes(q)||e.entity.toLowerCase().includes(q))
+          &&(actionF==='all'||e.action===actionF)
+          &&(roleF==='all'||e.role===roleF);
+      });
+      const pages = Math.ceil(filtered.length/PER);
+      const slice = filtered.slice((page-1)*PER,page*PER);
+
+      const sel = { padding:'7px 10px',fontSize:12,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',cursor:'pointer' };
+      const th  = { fontSize:10,color:'#6B7280',fontWeight:500,textTransform:'uppercase',letterSpacing:'0.05em',textAlign:'left',padding:'9px 14px',borderBottom:'1px solid #E2E3EA',background:'#F9F8F5' };
+      const td  = { padding:'10px 14px',fontSize:12,borderBottom:'1px solid #E2E3EA',verticalAlign:'middle' };
+
+      return (
+        <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
+          <div style={{ display:'flex',alignItems:'center',gap:8,flexWrap:'wrap' }}>
+            <div style={{ position:'relative' }}>
+              <span style={{ position:'absolute',left:9,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',pointerEvents:'none' }}><Icon name="Search" size={12}/></span>
+              <input value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} placeholder="Auteur, entité…"
+                style={{ paddingLeft:28,paddingRight:10,paddingTop:7,paddingBottom:7,fontSize:12,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',width:200,outline:'none' }} />
+            </div>
+            <select value={actionF} onChange={e=>{setActionF(e.target.value);setPage(1);}} style={sel}>
+              <option value="all">Toutes les actions</option>
+              {actions.map(a=><option key={a} value={a}>{a}</option>)}
+            </select>
+            <select value={roleF} onChange={e=>{setRoleF(e.target.value);setPage(1);}} style={sel}>
+              <option value="all">Tous les rôles</option>
+              <option value="super-admin">Super-admin</option>
+              <option value="validateur">Validateur</option>
+            </select>
+            <button onClick={()=>toast.success('Journal exporté (CSV).')}
+              style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',fontSize:12,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',cursor:'pointer',color:'#6B7280',marginLeft:'auto' }}>
+              <Icon name="Download" size={12}/> Exporter CSV
+            </button>
+          </div>
+
+          <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,overflow:'hidden' }}>
+            <table style={{ width:'100%',borderCollapse:'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{...th,width:120}}>Horodatage</th>
+                  <th style={th}>Auteur</th>
+                  <th style={{...th,width:130}}>Action</th>
+                  <th style={th}>Entité concernée</th>
+                  <th style={{...th,width:115}}>Adresse IP</th>
+                </tr>
+              </thead>
+              <tbody>
+                {slice.map((e,i) => (
+                  <tr key={e.id} style={{ background:i%2===1?'#FAFAF8':'#fff' }}>
+                    <td style={{...td,fontFamily:'JetBrains Mono,monospace',fontSize:11,color:'#6B7280',whiteSpace:'nowrap'}}>{e.ts}</td>
+                    <td style={td}>
+                      <div style={{ display:'flex',alignItems:'center',gap:7 }}>
+                        <span>{e.author}</span>
+                        <RoleBadge role={e.role}/>
+                      </div>
+                    </td>
+                    <td style={td}><ActionBadge action={e.action}/></td>
+                    <td style={{...td,color:'#6B7280',maxWidth:260,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{e.entity}</td>
+                    <td style={{...td,fontFamily:'JetBrains Mono,monospace',fontSize:11,color:'#6B7280'}}>{e.ip}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {slice.length===0 && <p style={{textAlign:'center',padding:40,color:'#6B7280',fontSize:13}}>Aucune entrée correspondante.</p>}
+          </div>
+
+          <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between' }}>
+            <p style={{fontSize:11,color:'#6B7280'}}>{filtered.length} entrée{filtered.length>1?'s':''}</p>
+            {pages>1 && (
+              <div style={{ display:'flex',gap:4 }}>
+                {Array.from({length:pages},(_,i)=>i+1).map(p=>(
+                  <button key={p} onClick={()=>setPage(p)}
+                    style={{ width:28,height:28,borderRadius:5,fontSize:12,fontWeight:500,border:'none',cursor:'pointer',background:p===page?'#5B21B6':'transparent',color:p===page?'#fff':'#6B7280' }}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Statistics ─────────────────────────────────────────────────────── */
+    function StatisticsView() {
+      const th = { fontSize:11,color:'#6B7280',fontWeight:500,textTransform:'uppercase',letterSpacing:'0.05em',padding:'8px 0',borderBottom:'1px solid #E2E3EA' };
+      const td = { padding:'11px 0',fontSize:13,borderBottom:'1px solid #E2E3EA',verticalAlign:'middle' };
+      return (
+        <div style={{ display:'flex',flexDirection:'column',gap:20 }}>
+          <div style={{ display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14 }}>
+            <StatCard label="Total résultats"    value="1 847"                                     color="violet"  />
+            <StatCard label="Imports ce mois"    value="23"    delta="+8" deltaLabel="vs. mois dernier" color="blue"    />
+            <StatCard label="Filières actives"   value="6"                                          color="emerald" />
+            <StatCard label="Validateurs actifs" value="4"                                          color="amber"   />
+          </div>
+
+          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:16 }}>
+            <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,padding:20 }}>
+              <p style={{ fontSize:13,fontWeight:600,marginBottom:4 }}>Résultats par filière</p>
+              <div style={{ display:'flex',alignItems:'center',gap:10,marginBottom:14 }}>
+                <p style={{ fontSize:11,color:'#6B7280',flex:1 }}>Publiés vs. en attente</p>
+                <span style={{ display:'flex',alignItems:'center',gap:5,fontSize:11,color:'#6B7280' }}><span style={{ width:10,height:10,borderRadius:2,background:'#7C3AED',display:'inline-block' }}/>Publiés</span>
+                <span style={{ display:'flex',alignItems:'center',gap:5,fontSize:11,color:'#6B7280' }}><span style={{ width:10,height:10,borderRadius:2,background:'#DDD6FE',display:'inline-block' }}/>En attente</span>
+              </div>
+              <GroupedBarChart data={STATS_FILIERES} xKey="filiere" series={[{key:'publies',color:'#7C3AED',label:'Publiés'},{key:'attente',color:'#DDD6FE',label:'En attente'}]} height={200} />
+            </div>
+            <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,padding:20 }}>
+              <p style={{ fontSize:13,fontWeight:600,marginBottom:4 }}>Volumétrie des imports</p>
+              <div style={{ display:'flex',alignItems:'center',gap:10,marginBottom:14 }}>
+                <p style={{ fontSize:11,color:'#6B7280',flex:1 }}>Imports et lignes par mois</p>
+                <span style={{ display:'flex',alignItems:'center',gap:5,fontSize:11,color:'#6B7280' }}><span style={{ width:12,height:2,background:'#7C3AED',display:'inline-block' }}/>Imports</span>
+                <span style={{ display:'flex',alignItems:'center',gap:5,fontSize:11,color:'#6B7280' }}><span style={{ width:12,height:2,background:'#0EA5E9',display:'inline-block',opacity:0.7 }}/>Lignes</span>
+              </div>
+              <SimpleLineChart data={STATS_IMPORTS} xKey="mois" series={[{key:'imports',color:'#7C3AED',label:'Imports'},{key:'lignes',color:'#0EA5E9',label:'Lignes',dash:'4 2'}]} height={200} />
+            </div>
+          </div>
+
+          <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,padding:20 }}>
+            <p style={{ fontSize:13,fontWeight:600,marginBottom:14 }}>Activité des validateurs — janvier 2025</p>
+            <table style={{ width:'100%',borderCollapse:'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{...th,textAlign:'left'}}>Validateur</th>
+                  <th style={{...th,textAlign:'right'}}>Imports</th>
+                  <th style={{...th,textAlign:'right'}}>Publications</th>
+                  <th style={{...th,textAlign:'right'}}>Validations</th>
+                </tr>
+              </thead>
+              <tbody>
+                {VALIDATORS_STATS.map((v,i) => (
+                  <tr key={i} style={{background:i%2===1?'#FAFAF8':'#fff'}}>
+                    <td style={{...td,fontWeight:500}}>{v.name}</td>
+                    <td style={{...td,textAlign:'right',color:'#6B7280',fontVariantNumeric:'tabular-nums'}}>{v.imports}</td>
+                    <td style={{...td,textAlign:'right',color:'#6B7280',fontVariantNumeric:'tabular-nums'}}>{v.publications}</td>
+                    <td style={{...td,textAlign:'right',color:'#6B7280',fontVariantNumeric:'tabular-nums'}}>{v.validations}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Settings — Search ──────────────────────────────────────────────── */
+    function SettingsSearchView() {
+      const [current,  setCurrent]  = useState('nom-prenom');
+      const [pending,  setPending]  = useState(null);
+      const [confirm,  setConfirm]  = useState(false);
+
+      const modeLabel = m => m==='nom-prenom' ? 'Nom / Prénom' : 'Numéro d\'étudiant';
+
+      const OPTIONS = [
+        {
+          mode:'nom-prenom', label:'Nom / Prénom', icon:'User',
+          desc:'Les étudiants saisissent leur nom et prénom pour retrouver leurs résultats.',
+          preview: (
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              <div style={{background:'#fff',border:'1px solid #E5E7EB',borderRadius:5,padding:'6px 10px',fontSize:11,color:'#9CA3AF'}}>Nom de famille…</div>
+              <div style={{background:'#fff',border:'1px solid #E5E7EB',borderRadius:5,padding:'6px 10px',fontSize:11,color:'#9CA3AF'}}>Prénom…</div>
+              <div style={{background:'#7C3AED',borderRadius:5,padding:'6px 10px',fontSize:11,color:'#fff',textAlign:'center',fontWeight:500}}>Rechercher mes résultats</div>
+            </div>
+          ),
+        },
+        {
+          mode:'matricule', label:'Numéro d\'étudiant', icon:'Hash',
+          desc:'Les étudiants saisissent leur matricule pour retrouver leurs résultats.',
+          preview: (
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              <div style={{background:'#fff',border:'1px solid #E5E7EB',borderRadius:5,padding:'6px 10px',fontSize:11,color:'#9CA3AF',fontFamily:'JetBrains Mono,monospace'}}>Numéro étudiant (ex. 20241234)…</div>
+              <div style={{background:'#7C3AED',borderRadius:5,padding:'6px 10px',fontSize:11,color:'#fff',textAlign:'center',fontWeight:500}}>Rechercher mes résultats</div>
+            </div>
+          ),
+        },
+      ];
+
+      return (
+        <div style={{ maxWidth:680,display:'flex',flexDirection:'column',gap:20 }}>
+          <div style={{ display:'flex',alignItems:'flex-start',gap:10,padding:14,borderRadius:8,background:'#FFFBEB',border:'1px solid #FDE68A' }}>
+            <Icon name="Globe" size={15} style={{color:'#D97706',marginTop:1,flexShrink:0}} />
+            <div>
+              <p style={{fontSize:13,fontWeight:500,color:'#92400E',marginBottom:3}}>Ce réglage s'applique à tout le site</p>
+              <p style={{fontSize:12,color:'#B45309',lineHeight:1.5}}>Le mode de recherche affecte immédiatement la façon dont tous les étudiants accèdent à leurs résultats sur le portail public.</p>
+            </div>
+          </div>
+
+          <div>
+            <h2 style={{fontFamily:'"DM Serif Display",Georgia,serif',fontSize:18,fontWeight:400,marginBottom:6}}>Mode de recherche public</h2>
+            <p style={{fontSize:13,color:'#6B7280',marginBottom:18}}>Sélectionnez comment les étudiants retrouvent leurs résultats. Un seul mode actif à la fois.</p>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+              {OPTIONS.map(({mode,label,icon,desc,preview}) => {
+                const sel = (pending??current)===mode;
+                const isCur = current===mode, isPend = pending===mode;
+                return (
+                  <button key={mode} onClick={()=>mode!==current?setPending(mode):setPending(null)}
+                    style={{textAlign:'left',padding:16,borderRadius:8,border:`2px solid ${sel?'#7C3AED':'#E2E3EA'}`,background:sel?'rgba(237,233,248,0.5)':'#fff',cursor:'pointer',boxShadow:sel?'0 1px 4px rgba(124,58,237,0.1)':'none',transition:'border 0.15s'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+                      <Icon name={icon} size={14} style={{color:sel?'#7C3AED':'#6B7280'}} />
+                      <span style={{fontSize:13,fontWeight:600,color:sel?'#4C1D95':'#0D1425',flex:1}}>{label}</span>
+                      {isCur && !isPend && <span style={{fontSize:10,background:'#D1FAE5',color:'#065F46',padding:'2px 7px',borderRadius:3,fontWeight:500}}>Actif</span>}
+                      {isPend && <span style={{fontSize:10,background:'#FEF3C7',color:'#92400E',padding:'2px 7px',borderRadius:3,fontWeight:500}}>À appliquer</span>}
+                    </div>
+                    <p style={{fontSize:12,color:'#6B7280',marginBottom:12,lineHeight:1.5}}>{desc}</p>
+                    <div style={{background:'#F9FAFB',borderRadius:6,padding:12,border:'1px solid #F3F4F6'}}>
+                      <p style={{fontSize:10,color:'#6B7280',fontWeight:500,marginBottom:8}}>Aperçu du formulaire public</p>
+                      {preview}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {pending && !confirm && (
+            <div style={{display:'flex',alignItems:'center',gap:14,padding:14,background:'#fff',border:'1px solid #C4B5FD',borderRadius:8}}>
+              <div style={{flex:1}}>
+                <p style={{fontSize:13,fontWeight:500,marginBottom:2}}>Basculer vers « {modeLabel(pending)} »</p>
+                <p style={{fontSize:12,color:'#6B7280'}}>Ce changement sera visible immédiatement par tous les visiteurs.</p>
+              </div>
+              <button onClick={()=>setConfirm(true)}
+                style={{padding:'8px 14px',background:'#5B21B6',color:'#fff',border:'none',borderRadius:6,fontSize:13,fontWeight:500,cursor:'pointer',whiteSpace:'nowrap'}}>
+                Appliquer ce changement
+              </button>
+              <button onClick={()=>setPending(null)} style={{background:'none',border:'none',cursor:'pointer',color:'#6B7280',padding:4}}><Icon name="X" size={15}/></button>
+            </div>
+          )}
+
+          {confirm && pending && (
+            <div style={{background:'#fff',border:'2px solid #FCD34D',borderRadius:8,padding:20,display:'flex',flexDirection:'column',gap:14}}>
+              <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+                <Icon name="AlertTriangle" size={17} style={{color:'#D97706',flexShrink:0,marginTop:2}} />
+                <div>
+                  <p style={{fontSize:13,fontWeight:600,marginBottom:6}}>Confirmer le changement de mode de recherche</p>
+                  <p style={{fontSize:12,color:'#6B7280',lineHeight:1.6}}>
+                    Vous êtes sur le point de remplacer le mode <strong style={{color:'#0D1425'}}>« {modeLabel(current)} »</strong> par{' '}
+                    <strong style={{color:'#0D1425'}}>« {modeLabel(pending)} »</strong>.
+                    Ce changement prend effet immédiatement pour <strong style={{color:'#0D1425'}}>tous les visiteurs du site public</strong>.
+                  </p>
+                </div>
+              </div>
+              <ul style={{fontSize:12,color:'#6B7280',lineHeight:1.7,paddingLeft:28,marginLeft:8}}>
+                <li>Les étudiants devront utiliser {pending==='matricule'?'leur numéro d\'étudiant':'leur nom et prénom'} pour accéder à leurs résultats.</li>
+                <li>L'ancien formulaire de recherche sera désactivé.</li>
+                <li>Aucune donnée ne sera modifiée ou supprimée.</li>
+              </ul>
+              <div style={{display:'flex',gap:10,marginLeft:28}}>
+                <button onClick={()=>{setCurrent(pending);setPending(null);setConfirm(false);toast.success('Mode de recherche mis à jour.');}}
+                  style={{padding:'8px 14px',background:'#5B21B6',color:'#fff',border:'none',borderRadius:6,fontSize:13,fontWeight:500,cursor:'pointer'}}>
+                  Confirmer
+                </button>
+                <button onClick={()=>{setConfirm(false);setPending(null);}}
+                  style={{padding:'8px 14px',fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#fff',cursor:'pointer',color:'#6B7280'}}>
+                  Annuler
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ── Settings — General ─────────────────────────────────────────────── */
+    function SettingsGeneralView() {
+      const [name,   setName]   = useState('UniRésultats — Université de Paris');
+      const [email,  setEmail]  = useState('scolarite@univ-paris.fr');
+      const [annOn,  setAnnOn]  = useState(false);
+      const [annTxt, setAnnTxt] = useState('');
+      const field = { width:'100%',padding:'9px 12px',fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#F0EEE9',outline:'none' };
+      return (
+        <div style={{ maxWidth:500,display:'flex',flexDirection:'column',gap:16 }}>
+          <div style={{ background:'#fff',border:'1px solid #E2E3EA',borderRadius:8,overflow:'hidden' }}>
+            <div style={{ padding:22,display:'flex',flexDirection:'column',gap:16 }}>
+              <h3 style={{ fontFamily:'"DM Serif Display",Georgia,serif',fontSize:16,fontWeight:400,margin:0 }}>Informations de la plateforme</h3>
+              <div>
+                <label style={{ display:'block',fontSize:13,fontWeight:500,marginBottom:6 }}>Nom de la plateforme</label>
+                <input value={name} onChange={e=>setName(e.target.value)} style={field} />
+              </div>
+              <div>
+                <label style={{ display:'block',fontSize:13,fontWeight:500,marginBottom:6 }}>E-mail de contact affiché</label>
+                <input value={email} onChange={e=>setEmail(e.target.value)} type="email" style={field} />
+                <p style={{ fontSize:11,color:'#6B7280',marginTop:5 }}>Visible en pied de page sur le portail public.</p>
+              </div>
+            </div>
+            <div style={{ padding:'18px 22px',borderTop:'1px solid #E2E3EA' }}>
+              <div style={{ display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:14,marginBottom: annOn?12:0 }}>
+                <div>
+                  <p style={{ fontSize:13,fontWeight:500,marginBottom:3 }}>Message d'annonce</p>
+                  <p style={{ fontSize:12,color:'#6B7280' }}>Afficher un bandeau en page d'accueil publique.</p>
+                </div>
+                <button onClick={()=>setAnnOn(v=>!v)}
+                  style={{ position:'relative',width:40,height:22,borderRadius:11,background:annOn?'#7C3AED':'#CBD5E1',border:'none',cursor:'pointer',flexShrink:0,transition:'background 0.2s' }}>
+                  <span style={{ position:'absolute',top:3,left:annOn?20:3,width:16,height:16,borderRadius:'50%',background:'#fff',boxShadow:'0 1px 3px rgba(0,0,0,0.2)',transition:'left 0.2s' }} />
+                </button>
+              </div>
+              {annOn && (
+                <textarea value={annTxt} onChange={e=>setAnnTxt(e.target.value)} rows={3}
+                  placeholder="Ex. : Les résultats du semestre 5 sont disponibles…"
+                  style={{ width:'100%',padding:'9px 12px',fontSize:13,border:'1px solid #E2E3EA',borderRadius:6,background:'#F0EEE9',outline:'none',resize:'none',fontFamily:'inherit' }} />
+              )}
+            </div>
+          </div>
+          <button onClick={()=>toast.success('Paramètres enregistrés.')}
+            style={{ display:'flex',alignItems:'center',gap:6,padding:'9px 18px',background:'#5B21B6',color:'#fff',border:'none',borderRadius:6,fontSize:13,fontWeight:500,cursor:'pointer',alignSelf:'flex-start' }}>
+            <Icon name="Save" size={13}/> Enregistrer les paramètres
+          </button>
+        </div>
+      );
+    }
+
+    /* ── Settings nav tabs ──────────────────────────────────────────────── */
+    function SettingsNav({ active, onNavigate }) {
+      const tabs = [['settings-search','Recherche publique'],['settings-general','Général']];
+      return (
+        <div style={{ display:'flex',gap:2,borderBottom:'1px solid #E2E3EA',marginBottom:22 }}>
+          {tabs.map(([id,label]) => (
+            <button key={id} onClick={()=>onNavigate(id)}
+              style={{ padding:'10px 16px',fontSize:13,fontWeight:500,border:'none',borderBottom:`2px solid ${active===id?'#7C3AED':'transparent'}`,color:active===id?'#6D28D9':'#6B7280',background:'none',cursor:'pointer',marginBottom:-1,transition:'color 0.15s,border-color 0.15s' }}>
+              {label}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    /* ── App root ───────────────────────────────────────────────────────── */
+    function App() {
+      const [view,    setView]    = useState('dashboard');
+      const [editing, setEditing] = useState(undefined); // undefined=no form, null=new, Account=edit
+      const [accounts,setAccounts]= useState(INITIAL_ACCOUNTS);
+
+      const isForm     = editing !== undefined;
+      const isSettings = view==='settings-search'||view==='settings-general';
+
+      const navigateTo = v => { setView(v); setEditing(undefined); };
+
+      const PAGE_TITLE = {
+        dashboard:        'Tableau de bord',
+        accounts:         'Comptes & Rôles',
+        activity:         "Journal d'activité",
+        statistics:       'Statistiques',
+        'settings-search':'Paramètres du site',
+        'settings-general':'Paramètres du site',
+        placeholder:      'Section Admin/Validateur',
+      };
+      const title = isForm ? (editing ? `Modifier — ${editing.name}` : 'Nouveau compte') : (PAGE_TITLE[view]||'');
+
+      return (
+        <div style={{ display:'flex', height:'100vh', overflow:'hidden', background:'#F4F3EF' }}>
+          <Toaster />
+          <Sidebar
+            active={isForm?'accounts':view}
+            onNavigate={navigateTo}
+            onPlaceholder={()=>toast.info('Cette section est couverte par le cahier Admin/Validateur.')}
+          />
+
+          {/* Content pane with violet top border = liseré Super-admin */}
+          <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', borderTop:'3px solid #7C3AED' }}>
+            <Header
+              title={title}
+              actions={view==='accounts'&&!isForm
+                ? <button onClick={()=>{setView('accounts');setEditing(null);}}
+                    style={{display:'flex',alignItems:'center',gap:6,padding:'7px 14px',background:'#5B21B6',color:'#fff',border:'none',borderRadius:6,fontSize:13,fontWeight:500,cursor:'pointer'}}>
+                    <Icon name="Plus" size={13}/> Nouveau compte
+                  </button>
+                : null}
+            />
+
+            <main style={{ flex:1, overflowY:'auto', padding:24 }}>
+              {isForm ? (
+                <AccountFormView account={editing} onBack={()=>{setEditing(undefined);setView('accounts');}} />
+              ) : isSettings ? (
+                <>
+                  <SettingsNav active={view} onNavigate={setView} />
+                  {view==='settings-search' ? <SettingsSearchView/> : <SettingsGeneralView/>}
+                </>
+              ) : view==='dashboard' ? (
+                <DashboardView onNavigate={navigateTo}/>
+              ) : view==='accounts' ? (
+                <AccountsView accounts={accounts} onEdit={a=>setEditing(a)} onNew={()=>setEditing(null)} onDelete={id=>setAccounts(p=>p.filter(a=>a.id!==id))} />
+              ) : view==='activity' ? (
+                <ActivityLogView/>
+              ) : view==='statistics' ? (
+                <StatisticsView/>
+              ) : (
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'100%',gap:10,color:'#9CA3AF'}}>
+                  <Icon name="BookOpen" size={32}/>
+                  <p style={{fontSize:13}}>Cette section fait partie du module Admin/Validateur.</p>
+                </div>
+              )}
+            </main>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

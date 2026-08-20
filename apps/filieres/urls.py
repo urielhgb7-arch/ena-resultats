@@ -16,4 +16,9 @@ urlpatterns = [
     ),
     path("semestre/<int:semestre_id>/sessions/", views.liste_sessions, name="sessions"),
     path("session/<int:session_id>/ue/", views.liste_ue, name="ue_liste"),
+
+    # AJAX Cascades
+    path("ajax/niveaux/", views.ajax_niveaux, name="ajax_niveaux"),
+    path("ajax/filieres/", views.ajax_filieres, name="ajax_filieres"),
+    path("ajax/semestres/", views.ajax_semestres, name="ajax_semestres"),
 ]

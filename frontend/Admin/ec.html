@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Éléments constitutifs — IUT Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','ui-monospace','monospace']}}}}</script>
+  <style>body{font-family:'Inter',system-ui,sans-serif;}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}</style>
+</head>
+<body class="bg-slate-100 text-slate-900 overflow-hidden">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-56 bg-slate-900 flex flex-col h-screen flex-shrink-0">
+    <div class="px-4 py-5 border-b border-white/10 flex-shrink-0"><div class="flex items-center gap-2.5"><div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg></div><div><div class="text-sm font-semibold text-white leading-tight">IUT — Admin</div><div class="text-xs text-slate-500">Validateur</div></div></div></div>
+    <nav class="flex-1 overflow-y-auto py-2 px-2 space-y-0.5 text-sm">
+      <a href="dashboard.html" class="flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Tableau de bord</a>
+      <div><button onclick="toggleNav(this)" class="w-full flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span class="flex-1 text-left">Référentiel</span><svg class="w-3.5 h-3.5 chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="sub-nav ml-4 mt-0.5 pl-3 border-l border-slate-700/40 space-y-0.5" style="display:none"><a href="annees.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Années académiques</a><a href="filieres.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Niveaux &amp; Filières</a><a href="specialites.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Spécialités</a><a href="semestres.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Semestres &amp; Sessions</a></div></div>
+      <div>
+        <button onclick="toggleNav(this)" class="w-full flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-300 bg-slate-800/40 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg><span class="flex-1 text-left">UE / EC</span><svg class="w-3.5 h-3.5 chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="sub-nav ml-4 mt-0.5 pl-3 border-l border-slate-700/40 space-y-0.5"><a href="ue.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Unités d'enseignement</a><a href="ec.html" class="flex px-2 py-1.5 rounded text-blue-400 bg-slate-800/60 font-medium transition-colors">Éléments constitutifs</a></div>
+      </div>
+      <div><button onclick="toggleNav(this)" class="w-full flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg><span class="flex-1 text-left">Import</span><svg class="w-3.5 h-3.5 chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="sub-nav ml-4 mt-0.5 pl-3 border-l border-slate-700/40 space-y-0.5" style="display:none"><a href="import-1.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Nouvel import</a></div></div>
+      <a href="validation.html" class="flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg><span class="flex-1">File de validation</span><span class="text-xs font-mono bg-slate-700 text-blue-300 rounded-full px-1.5 py-0.5">3</span></a>
+    </nav>
+    <div class="px-3 py-3 border-t border-white/10 flex-shrink-0"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0"><span class="text-xs font-bold text-slate-300">MD</span></div><div class="flex-1 min-w-0"><div class="text-xs font-medium text-slate-300 truncate">M. Dupont</div><div class="text-xs text-slate-500 truncate">admin@iut-info.fr</div></div><a href="login.html" class="p-1.5 text-slate-500 hover:text-red-400 rounded transition-colors"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></a></div></div>
+  </aside>
+
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <div class="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-2.5 flex items-center justify-between">
+      <span class="text-xs font-mono text-gray-400">Année active : <span class="text-gray-700 font-semibold">2024–2025</span></span>
+      <div class="flex items-center gap-3"><button class="relative p-1.5 text-gray-400 hover:text-gray-700 rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="absolute top-0.5 right-0.5 w-2 h-2 bg-blue-500 rounded-full"></span></button><div class="h-4 w-px bg-gray-200"></div><span class="text-xs text-gray-400">Rôle : <span class="font-semibold text-gray-700">Validateur</span></span></div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div><h1 class="text-xl font-semibold text-gray-900 tracking-tight">Éléments constitutifs</h1><p class="mt-0.5 text-sm text-gray-500">EC rattachés aux UE — filtrez par unité parente</p></div>
+        <button onclick="showAddForm()" class="flex items-center gap-2 px-3.5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouvel EC</button>
+      </div>
+
+      <!-- Filter by UE -->
+      <div class="flex items-center gap-3 mb-4">
+        <label class="text-xs font-medium text-gray-500 flex-shrink-0">Filtrer par UE :</label>
+        <select id="ue-filter" onchange="filterByUE()" class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+          <option value="all">Toutes les UE</option>
+          <option value="UE1.1">UE1.1 — Développement d'applications</option>
+          <option value="UE1.2">UE1.2 — Systèmes et réseaux</option>
+          <option value="UE2.1">UE2.1 — Mathématiques</option>
+          <option value="UE2.2">UE2.2 — Bases de données</option>
+        </select>
+      </div>
+
+      <!-- Add form -->
+      <div id="add-form" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <div class="flex gap-3 items-end flex-wrap">
+          <div><label class="block text-xs font-medium text-gray-700 mb-1">Code EC</label><input id="new-code" type="text" placeholder="EC1" class="w-20 text-sm border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"></div>
+          <div class="flex-1 min-w-40"><label class="block text-xs font-medium text-gray-700 mb-1">Libellé</label><input id="new-lib" type="text" placeholder="Algorithmes et structures" class="w-full text-sm border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"></div>
+          <div><label class="block text-xs font-medium text-gray-700 mb-1">Coeff.</label><input id="new-coeff" type="number" placeholder="2" class="w-16 text-sm border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"></div>
+          <div><label class="block text-xs font-medium text-gray-700 mb-1">UE parente</label><select id="new-ue" class="text-sm border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"><option value="UE1.1">UE1.1</option><option value="UE1.2">UE1.2</option><option value="UE2.1">UE2.1</option><option value="UE2.2">UE2.2</option></select></div>
+          <button onclick="addEC()" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition-colors">Ajouter</button>
+          <button onclick="document.getElementById('add-form').classList.add('hidden')" class="px-4 py-2 text-gray-600 text-sm border border-gray-200 rounded hover:bg-gray-100 transition-colors">Annuler</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+        <table class="w-full">
+          <thead><tr class="border-b border-gray-100 bg-gray-50"><th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Code</th><th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Libellé</th><th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">UE parente</th><th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Coeff.</th><th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Statut</th><th class="px-4 py-2.5"></th></tr></thead>
+          <tbody class="divide-y divide-gray-50" id="ec-body">
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE1.1"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC1</td><td class="px-4 py-3 text-sm text-gray-800">Algorithmique &amp; Python</td><td class="px-4 py-3"><span class="text-xs font-mono bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-medium">UE1.1</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">2</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Publié</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE1.1"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC2</td><td class="px-4 py-3 text-sm text-gray-800">Développement web (HTML/CSS/JS)</td><td class="px-4 py-3"><span class="text-xs font-mono bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-medium">UE1.1</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">2</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Publié</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE1.1"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC3</td><td class="px-4 py-3 text-sm text-gray-800">Gestion de projet</td><td class="px-4 py-3"><span class="text-xs font-mono bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-medium">UE1.1</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">1</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Publié</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE1.2"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC1</td><td class="px-4 py-3 text-sm text-gray-800">Systèmes d'exploitation</td><td class="px-4 py-3"><span class="text-xs font-mono bg-violet-50 text-violet-700 px-1.5 py-0.5 rounded font-medium">UE1.2</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">2</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Publié</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE1.2"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC2</td><td class="px-4 py-3 text-sm text-gray-800">Réseaux informatiques</td><td class="px-4 py-3"><span class="text-xs font-mono bg-violet-50 text-violet-700 px-1.5 py-0.5 rounded font-medium">UE1.2</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">2</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Publié</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE2.1"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC1</td><td class="px-4 py-3 text-sm text-gray-800">Algèbre linéaire</td><td class="px-4 py-3"><span class="text-xs font-mono bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded font-medium">UE2.1</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">2</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">Brouillon</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE2.2"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC1</td><td class="px-4 py-3 text-sm text-gray-800">SQL avancé</td><td class="px-4 py-3"><span class="text-xs font-mono bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-medium">UE2.2</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">3</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Publié</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+            <tr class="hover:bg-gray-50/70 transition-colors" data-ue="UE2.2"><td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">EC2</td><td class="px-4 py-3 text-sm text-gray-800">Modélisation UML</td><td class="px-4 py-3"><span class="text-xs font-mono bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-medium">UE2.2</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">2</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Publié</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+  function toggleNav(btn){const sub=btn.nextElementSibling;const chev=btn.querySelector('.chev');const hidden=sub.style.display==='none';sub.style.display=hidden?'':'none';if(chev)chev.style.transform=hidden?'':'rotate(-90deg)';}
+  function showAddForm(){document.getElementById('add-form').classList.remove('hidden');}
+  function filterByUE(){
+    const val=document.getElementById('ue-filter').value;
+    document.querySelectorAll('#ec-body tr').forEach(row=>{row.style.display=(val==='all'||row.dataset.ue===val)?'':'none';});
+  }
+  function addEC(){
+    const code=document.getElementById('new-code').value.trim();
+    const lib=document.getElementById('new-lib').value.trim();
+    const coeff=document.getElementById('new-coeff').value||'1';
+    const ue=document.getElementById('new-ue').value;
+    if(!code||!lib){alert('Veuillez remplir tous les champs.');return;}
+    const tr=document.createElement('tr');
+    tr.className='hover:bg-gray-50/70 transition-colors';
+    tr.dataset.ue=ue;
+    tr.innerHTML=`<td class="px-4 py-3 text-xs font-mono font-semibold text-gray-900">${code}</td><td class="px-4 py-3 text-sm text-gray-800">${lib}</td><td class="px-4 py-3"><span class="text-xs font-mono bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-medium">${ue}</span></td><td class="px-4 py-3 text-xs font-mono text-gray-600">${coeff}</td><td class="px-4 py-3"><span class="inline-flex text-xs font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">Brouillon</span></td><td class="px-4 py-3 text-right"><button onclick="this.closest('tr').remove()" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors">Supprimer</button></td>`;
+    const currentFilter=document.getElementById('ue-filter').value;
+    if(currentFilter!=='all'&&currentFilter!==ue)tr.style.display='none';
+    document.getElementById('ec-body').appendChild(tr);
+    document.getElementById('add-form').classList.add('hidden');
+    document.getElementById('new-code').value='';document.getElementById('new-lib').value='';document.getElementById('new-coeff').value='';
+  }
+</script>
+</body>
+</html>

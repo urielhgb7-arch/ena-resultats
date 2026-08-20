@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import — Étape 1 — IUT Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','ui-monospace','monospace']}}}}</script>
+  <style>body{font-family:'Inter',system-ui,sans-serif;}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}</style>
+</head>
+<body class="bg-slate-100 text-slate-900 overflow-hidden">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-56 bg-slate-900 flex flex-col h-screen flex-shrink-0">
+    <div class="px-4 py-5 border-b border-white/10 flex-shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg></div>
+        <div><div class="text-sm font-semibold text-white leading-tight">IUT — Admin</div><div class="text-xs text-slate-500">Validateur</div></div>
+      </div>
+    </div>
+    <nav class="flex-1 overflow-y-auto py-2 px-2 space-y-0.5 text-sm">
+      <a href="dashboard.html" class="flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Tableau de bord</a>
+      <div>
+        <button onclick="toggleNav(this)" class="w-full flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span class="flex-1 text-left">Référentiel</span><svg class="w-3.5 h-3.5 chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="sub-nav ml-4 mt-0.5 pl-3 border-l border-slate-700/40 space-y-0.5" style="display:none">
+          <a href="annees.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Années académiques</a>
+          <a href="filieres.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Niveaux &amp; Filières</a>
+          <a href="specialites.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Spécialités</a>
+          <a href="semestres.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Semestres &amp; Sessions</a>
+        </div>
+      </div>
+      <div>
+        <button onclick="toggleNav(this)" class="w-full flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg><span class="flex-1 text-left">UE / EC</span><svg class="w-3.5 h-3.5 chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="sub-nav ml-4 mt-0.5 pl-3 border-l border-slate-700/40 space-y-0.5" style="display:none"><a href="ue.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Unités d'enseignement</a><a href="ec.html" class="flex px-2 py-1.5 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-colors">Éléments constitutifs</a></div>
+      </div>
+      <div>
+        <button onclick="toggleNav(this)" class="w-full flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-300 bg-slate-800/40 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg><span class="flex-1 text-left">Import</span><svg class="w-3.5 h-3.5 chev" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="sub-nav ml-4 mt-0.5 pl-3 border-l border-slate-700/40 space-y-0.5">
+          <a href="import-1.html" class="flex items-center justify-between px-2 py-1.5 rounded text-blue-400 bg-slate-800/60 font-medium transition-colors">Nouvel import <span class="text-xs font-mono text-blue-500">ét. 1/3</span></a>
+        </div>
+      </div>
+      <a href="validation.html" class="flex items-center gap-2.5 px-3 py-2 rounded font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg><span class="flex-1">File de validation</span><span class="text-xs font-mono bg-slate-700 text-blue-300 rounded-full px-1.5 py-0.5">3</span></a>
+    </nav>
+    <div class="px-3 py-3 border-t border-white/10 flex-shrink-0">
+      <div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0"><span class="text-xs font-bold text-slate-300">MD</span></div><div class="flex-1 min-w-0"><div class="text-xs font-medium text-slate-300 truncate">M. Dupont</div><div class="text-xs text-slate-500 truncate">admin@iut-info.fr</div></div><a href="login.html" class="p-1.5 text-slate-500 hover:text-red-400 rounded transition-colors"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></a></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <div class="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-2.5 flex items-center justify-between">
+      <span class="text-xs font-mono text-gray-400">Année active : <span class="text-gray-700 font-semibold">2024–2025</span></span>
+      <div class="flex items-center gap-3"><button class="relative p-1.5 text-gray-400 hover:text-gray-700 rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="absolute top-0.5 right-0.5 w-2 h-2 bg-blue-500 rounded-full"></span></button><div class="h-4 w-px bg-gray-200"></div><span class="text-xs text-gray-400">Rôle : <span class="font-semibold text-gray-700">Validateur</span></span></div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto p-6">
+      <div class="mb-6">
+        <h1 class="text-xl font-semibold text-gray-900 tracking-tight">Import de notes — Étape 1 : Upload</h1>
+        <p class="mt-0.5 text-sm text-gray-500">Sélectionnez le fichier Excel et configurez la cible d'import</p>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="flex items-center bg-white rounded-lg border border-gray-200 px-5 py-4 gap-0 mb-6">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-blue-600 text-white">1</div>
+        <span class="ml-2.5 text-sm font-medium text-blue-600">Upload</span>
+        <div class="flex-1 h-px mx-4 bg-gray-200"></div>
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-gray-100 text-gray-400">2</div>
+        <span class="ml-2.5 text-sm font-medium text-gray-400">Mapping des colonnes</span>
+        <div class="flex-1 h-px mx-4 bg-gray-200"></div>
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-gray-100 text-gray-400">3</div>
+        <span class="ml-2.5 text-sm font-medium text-gray-400">Aperçu &amp; Validation</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <!-- Drop zone -->
+        <div class="lg:col-span-3">
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Fichier source</h3>
+          <div id="drop-zone"
+            ondragover="event.preventDefault();this.classList.add('border-blue-400','bg-blue-50')"
+            ondragleave="this.classList.remove('border-blue-400','bg-blue-50')"
+            ondrop="handleDrop(event)"
+            onclick="simulateFile()"
+            class="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition-all">
+            <div id="drop-empty">
+              <svg class="w-10 h-10 text-gray-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+              <p class="text-sm font-medium text-gray-600">Glissez-déposez votre fichier ici</p>
+              <p class="text-xs text-gray-400 mt-1">ou cliquez pour simuler un fichier (.xlsx, .xls)</p>
+            </div>
+            <div id="drop-filled" class="hidden flex items-center justify-center gap-3">
+              <svg class="w-8 h-8 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <div class="text-left">
+                <div class="text-sm font-semibold text-emerald-800 font-mono">notes_S1_SIO_SLAM_SN_2025.xlsx</div>
+                <div class="text-xs text-emerald-600 mt-0.5">Fichier prêt à l'analyse</div>
+              </div>
+              <button onclick="event.stopPropagation();removeFile()" class="ml-4 p-1.5 text-emerald-600 hover:text-red-500 rounded transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target config -->
+        <div class="lg:col-span-2">
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Cible d'import</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Semestre</label>
+              <select class="w-full px-3 py-2 text-sm border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                <option>S1 — Semestre 1</option><option>S2 — Semestre 2</option><option>S3 — Semestre 3</option>
+                <option>S4 — Semestre 4</option><option>S5 — Semestre 5</option><option>S6 — Semestre 6 — Stage</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Session</label>
+              <select class="w-full px-3 py-2 text-sm border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                <option>SN — Session normale</option><option>SR — Session de rattrapage</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Filière</label>
+              <select id="filiere-sel" onchange="updateSpec()" class="w-full px-3 py-2 text-sm border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                <option value="has">SIO — Services Informatiques aux Organisations</option>
+                <option value="has">STID — Statistiques et Informatique Décisionnelle</option>
+                <option value="no">SG — Secrétariat de Gestion</option>
+                <option value="has">CGO — Comptabilité et Gestion des Organisations</option>
+              </select>
+            </div>
+            <div id="spec-row">
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Spécialité</label>
+              <select class="w-full px-3 py-2 text-sm border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                <option>SLAM — Solutions Logicielles et Applications Métiers</option>
+                <option>SISR — Solutions d'Infrastructure, Systèmes et Réseaux</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <a id="next-btn" href="#" onclick="return checkFile(event)"
+          class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition-colors">
+          Continuer — Mapping des colonnes
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  let hasFile = false;
+  function toggleNav(btn) {
+    const sub = btn.nextElementSibling;
+    const chev = btn.querySelector('.chev');
+    const hidden = sub.style.display === 'none';
+    sub.style.display = hidden ? '' : 'none';
+    if (chev) chev.style.transform = hidden ? '' : 'rotate(-90deg)';
+  }
+  function simulateFile() {
+    if (hasFile) return;
+    showFile();
+  }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.remove('border-blue-400','bg-blue-50');
+    showFile();
+  }
+  function showFile() {
+    hasFile = true;
+    const dz = document.getElementById('drop-zone');
+    dz.classList.remove('border-gray-300','hover:border-blue-300','hover:bg-blue-50/30');
+    dz.classList.add('border-emerald-300','bg-emerald-50/50','cursor-default');
+    document.getElementById('drop-empty').classList.add('hidden');
+    const filled = document.getElementById('drop-filled');
+    filled.classList.remove('hidden');
+    filled.classList.add('flex');
+  }
+  function removeFile() {
+    hasFile = false;
+    const dz = document.getElementById('drop-zone');
+    dz.classList.add('border-gray-300','hover:border-blue-300','hover:bg-blue-50/30','cursor-pointer');
+    dz.classList.remove('border-emerald-300','bg-emerald-50/50','cursor-default');
+    document.getElementById('drop-empty').classList.remove('hidden');
+    const filled = document.getElementById('drop-filled');
+    filled.classList.add('hidden');
+    filled.classList.remove('flex');
+  }
+  function checkFile(e) {
+    if (!hasFile) {
+      e.preventDefault();
+      document.getElementById('drop-zone').classList.add('border-red-400','bg-red-50/30');
+      setTimeout(() => document.getElementById('drop-zone').classList.remove('border-red-400','bg-red-50/30'), 1500);
+      return false;
+    }
+    window.location.href = 'import-2.html';
+    return false;
+  }
+  function updateSpec() {
+    const sel = document.getElementById('filiere-sel');
+    const row = document.getElementById('spec-row');
+    row.style.display = sel.value === 'no' ? 'none' : '';
+  }
+</script>
+</body>
+</html>

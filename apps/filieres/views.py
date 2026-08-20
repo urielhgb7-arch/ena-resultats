@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.http import HttpResponse
 from .models import AnneeAcademique, Niveau, Filiere, Specialite, Semestre, SessionResultat
 
 
@@ -175,3 +176,35 @@ def liste_ue(request, session_id):
         "breadcrumb": breadcrumb,
     }
     return render(request, "filieres/ue_liste.html", context)
+
+
+# --- Endpoints AJAX / HTMX pour la recherche en cascade (Tâche 13) ---
+
+def ajax_niveaux(request):
+    annee_id = request.GET.get("annee_id")
+    options = ['<option value="">— Choisir un niveau —</option>']
+    if annee_id:
+        niveaux = Niveau.objects.filter(annee_id=annee_id)
+        for n in niveaux:
+            options.append(f'<option value="{n.id}">{n.libelle}</option>')
+    return HttpResponse("\n".join(options))
+
+
+def ajax_filieres(request):
+    niveau_id = request.GET.get("niveau_id")
+    options = ['<option value="">— Choisir une filière —</option>']
+    if niveau_id:
+        filieres = Filiere.objects.filter(niveau_id=niveau_id)
+        for f in filieres:
+            options.append(f'<option value="{f.id}">{f.nom}</option>')
+    return HttpResponse("\n".join(options))
+
+
+def ajax_semestres(request):
+    filiere_id = request.GET.get("filiere_id")
+    options = ['<option value="">Tous les semestres</option>']
+    if filiere_id:
+        semestres = Semestre.objects.filter(filiere_id=filiere_id)
+        for s in semestres:
+            options.append(f'<option value="{s.id}">{s.libelle}</option>')
+    return HttpResponse("\n".join(options))

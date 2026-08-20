@@ -1,18 +1,14 @@
 from decimal import Decimal
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.db.models import Q, Avg, Max, Min
-from apps.filieres.models import SessionResultat
+from apps.filieres.models import AnneeAcademique, Niveau, Filiere, Semestre, SessionResultat
 from .models import UE, Etudiant, ResultatUE, NoteEC
 
 
 def detail_ue(request, ue_id):
     """
     Tâche 10 : Tableau interactif de classement d'une UE.
-    - Tri dynamique (par mérite / moyenne décroissante, alphabétique, etc.)
-    - Recherche instantanée HTMX & Alpine.js
-    - Synthèse statistique (Taux de réussite, moyenne de promo, note max/min)
-    - Grille des notes d'éléments constitutifs (EC)
     """
     ue = get_object_or_404(
         UE.objects.select_related(
@@ -27,10 +23,8 @@ def detail_ue(request, ue_id):
         statut="publie"
     )
 
-    # Récupération de tous les résultats de l'UE
     queryset = ue.resultats.select_related("etudiant").prefetch_related("etudiant__notes_ec")
 
-    # Recherche locale (Nom / Prénom / Matricule)
     q = request.GET.get("q", "").strip()
     if q:
         queryset = queryset.filter(
@@ -39,7 +33,6 @@ def detail_ue(request, ue_id):
             | Q(etudiant__matricule__icontains=q)
         )
 
-    # Tri dynamique
     tri = request.GET.get("tri", "nom_asc")
     if tri == "moyenne_desc":
         queryset = queryset.order_by("-moyenne_ue", "etudiant__nom", "etudiant__prenom")
@@ -47,12 +40,11 @@ def detail_ue(request, ue_id):
         queryset = queryset.order_by("moyenne_ue", "etudiant__nom", "etudiant__prenom")
     elif tri == "matricule_asc":
         queryset = queryset.order_by("etudiant__matricule", "etudiant__nom")
-    else:  # nom_asc par défaut
+    else:
         queryset = queryset.order_by("etudiant__nom", "etudiant__prenom")
 
     resultats = list(queryset)
 
-    # Statistiques globales de l'UE (calculées sur l'ensemble des résultats de l'UE, non filtrés)
     tous_resultats = ue.resultats.all()
     total_etudiants = tous_resultats.count()
     valides_count = tous_resultats.filter(statut__in=["V", "V*"]).count()
@@ -63,10 +55,8 @@ def detail_ue(request, ue_id):
         note_min=Min("moyenne_ue")
     )
 
-    # Préparation des notes EC associées pour affichage rapide en template
     ecs = list(ue.ecs.all())
     
-    # Mapping étudiant_id -> {ec_id: note}
     notes_map = {}
     if resultats:
         notes_qs = NoteEC.objects.filter(
@@ -78,7 +68,6 @@ def detail_ue(request, ue_id):
                 notes_map[n.etudiant_id] = {}
             notes_map[n.etudiant_id][n.ec_id] = n.note
 
-    # Enrichit chaque objet résultat avec ses notes par EC et son rang
     for idx, res in enumerate(resultats, start=1):
         res.rang = idx
         res.ec_notes = [
@@ -114,7 +103,6 @@ def detail_ue(request, ue_id):
         "breadcrumb": breadcrumb,
     }
 
-    # Si requête HTMX partielle : renvoie uniquement le corps du tableau
     if request.headers.get("HX-Request"):
         return render(request, "resultats/partials/ue_table_rows.html", context)
 
@@ -157,13 +145,13 @@ def tableau_complet_session(request, session_id):
 
 def recherche_personnelle(request):
     """
-    Tâche 11 : Moteur de recherche personnel.
-    - Recherche instantanée par Nom / Prénom OU Matricule
-    - Toggle de mode (Matricule vs Nom)
-    - Relevé personnel complet regroupé par UE avec total des crédits ECTS
+    Tâches 11 & 12 : Consultation des notes d'un étudiant de L1 à L3 (sans relevé PDF formel).
+    - Regroupement des notes par Niveau (Licence 1, 2, 3) et par Semestre (S1 à S6).
+    - Calcul des crédits ECTS validés par semestre et sur tout le cursus.
+    - Recherche par Nom/Prénom ou Matricule avec sélecteur de mode.
     """
     q = request.GET.get("q", "").strip()
-    mode = request.GET.get("mode", "auto")  # 'auto', 'matricule', 'nom'
+    mode = request.GET.get("mode", "auto")
 
     etudiants_data = []
 
@@ -172,46 +160,83 @@ def recherche_personnelle(request):
         if mode == "matricule":
             query = Q(matricule__iexact=q) | Q(matricule__icontains=q)
         elif mode == "nom":
-            # Recherche découpée par mots (Nom et/ou Prénom)
             mots = q.split()
             for mot in mots:
                 query |= Q(nom__icontains=mot) | Q(prenom__icontains=mot)
-        else:  # mode 'auto'
+        else:
             query = Q(matricule__icontains=q) | Q(nom__icontains=q) | Q(prenom__icontains=q)
 
         etudiants = (
             Etudiant.objects.filter(query)
             .prefetch_related(
-                "resultats_ue__ue__session__semestre__filiere",
+                "resultats_ue__ue__session__semestre__filiere__niveau__annee",
+                "resultats_ue__ue__ecs",
                 "notes_ec__ec__ue"
             )
-            .distinct()[:20]  # Limite à 20 résultats max pour la performance
+            .distinct()[:20]
         )
 
         for etu in etudiants:
-            # Récupère uniquement les résultats des UE publiées
+            # Récupère tous les résultats des UE publiées
             res_publies = [
                 r for r in etu.resultats_ue.all()
                 if r.ue.statut == "publie"
             ]
-            
-            # Calcul du total des crédits ECTS validés
-            credits_valides = sum(
-                r.ue.credits for r in res_publies
-                if r.statut in ["V", "V*"]
-            )
-            credits_inscrits = sum(r.ue.credits for r in res_publies)
+
+            # Organisation hiérarchique par Niveau (L1, L2, L3) puis par Semestre (S1, S2...)
+            niveaux_tree = {}
+            total_credits_valides = 0
+            total_credits_inscrits = 0
+            filiere_nom = ""
+
+            for r in res_publies:
+                session = r.ue.session
+                semestre = session.semestre
+                filiere = semestre.filiere
+                niveau = filiere.niveau
+
+                if not filiere_nom:
+                    filiere_nom = filiere.nom
+
+                niv_code = niveau.libelle if niveau else "Cycle"
+                sem_libelle = semestre.libelle
+
+                if niv_code not in niveaux_tree:
+                    niveaux_tree[niv_code] = {
+                        "libelle": f"Licence {niv_code[1:]}" if niv_code.startswith("L") else niv_code,
+                        "semestres": {}
+                    }
+
+                if sem_libelle not in niveaux_tree[niv_code]["semestres"]:
+                    niveaux_tree[niv_code]["semestres"][sem_libelle] = {
+                        "libelle": sem_libelle,
+                        "filiere": filiere.nom,
+                        "ues": [],
+                        "credits_valides": 0,
+                        "credits_totaux": 0
+                    }
+
+                is_valide = r.statut in ["V", "V*"]
+                if is_valide:
+                    niveaux_tree[niv_code]["semestres"][sem_libelle]["credits_valides"] += r.ue.credits
+                    total_credits_valides += r.ue.credits
+
+                niveaux_tree[niv_code]["semestres"][sem_libelle]["credits_totaux"] += r.ue.credits
+                total_credits_inscrits += r.ue.credits
+
+                niveaux_tree[niv_code]["semestres"][sem_libelle]["ues"].append(r)
 
             etudiants_data.append({
                 "etudiant": etu,
-                "resultats": res_publies,
-                "credits_valides": credits_valides,
-                "credits_inscrits": credits_inscrits,
+                "filiere_nom": filiere_nom,
+                "niveaux_tree": niveaux_tree,
+                "credits_valides": total_credits_valides,
+                "credits_inscrits": total_credits_inscrits,
             })
 
     breadcrumb = [
         {"label": "Accueil", "url": reverse("filieres:accueil")},
-        {"label": "Recherche de Résultats", "url": request.path},
+        {"label": "Consultation des Notes L1-L3", "url": request.path},
     ]
 
     context = {
@@ -222,8 +247,38 @@ def recherche_personnelle(request):
         "breadcrumb": breadcrumb,
     }
 
-    # Support HTMX pour rafraîchissement instantané
     if request.headers.get("HX-Request"):
         return render(request, "resultats/partials/recherche_results.html", context)
 
     return render(request, "resultats/recherche.html", context)
+
+
+def recherche_avancee(request):
+    """
+    Tâche 13 : Recherche directe / avancée avec filtres en cascade.
+    Permet à l'étudiant de choisir Année -> Niveau -> Filière -> Semestre
+    et d'accéder directement aux procès-verbaux d'évaluation.
+    """
+    annee_id = request.GET.get("annee_id")
+    niveau_id = request.GET.get("niveau_id")
+    filiere_id = request.GET.get("filiere_id")
+    semestre_id = request.GET.get("semestre_id")
+
+    # Si le formulaire complet est soumis, redirection vers la vue correspondante
+    if filiere_id:
+        if semestre_id:
+            return redirect("filieres:sessions", semestre_id=semestre_id)
+        return redirect("filieres:semestres", filiere_id=filiere_id)
+
+    annees = AnneeAcademique.objects.all().order_by("-libelle")
+
+    breadcrumb = [
+        {"label": "Accueil", "url": reverse("filieres:accueil")},
+        {"label": "Recherche Directe", "url": request.path},
+    ]
+
+    context = {
+        "annees": annees,
+        "breadcrumb": breadcrumb,
+    }
+    return render(request, "resultats/recherche_avancee.html", context)

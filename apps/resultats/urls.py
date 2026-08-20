@@ -8,4 +8,5 @@ urlpatterns = [
     path("ue/<int:ue_id>/classement/", views.detail_ue, name="ue_classement"),
     path("session/<int:session_id>/tableau/", views.tableau_complet_session, name="ue_tableau_complet"),
     path("recherche/", views.recherche_personnelle, name="recherche_personnelle"),
+    path("recherche-avancee/", views.recherche_avancee, name="recherche_avancee"),
 ]
