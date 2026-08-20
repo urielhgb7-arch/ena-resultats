@@ -49,6 +49,7 @@ class LigneBrute(models.Model):
     numero_ligne = models.PositiveIntegerField()
     donnees_brutes = models.JSONField()          # ligne Excel telle quelle
     statut_traitement = models.CharField(max_length=20, default="en_attente")
+    message_erreur = models.TextField(blank=True, default="")
 
     class Meta:
         ordering = ["numero_ligne"]

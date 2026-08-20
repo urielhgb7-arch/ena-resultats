@@ -7,3 +7,4 @@ django-simple-history
 django-axes
 argon2-cffi
 python-decouple
+django-q2

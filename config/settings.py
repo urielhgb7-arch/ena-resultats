@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "apps.imports",
     "apps.accounts",
     "simple_history",
+    "django_q",
 ]
 
 MIDDLEWARE = [
@@ -125,4 +126,20 @@ if not DEBUG:
 
 X_FRAME_OPTIONS = "DENY"
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+# --- Django-Q2 Configuration (Scalable Background Worker via PostgreSQL) ---
+Q_CLUSTER = {
+    "name": "ena_tasks",
+    "workers": config("Q_WORKERS", default=2, cast=int),
+    "recycle": 500,
+    "timeout": 300,
+    "retry": 360,
+    "save_limit": 250,
+    "queue_limit": 500,
+    "cpu_affinity": 1,
+    "label": "Tâches d'arrière-plan",
+    "orm": "default",
+    "sync": config("Q_SYNC", default=False, cast=bool),
+}
 
