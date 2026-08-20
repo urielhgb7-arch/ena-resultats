@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Niveaux — {{ annee.libelle }} — Résultats ENA{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Année académique</span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-neutral-900 mt-1">{{ annee.libelle }}</h1>
+        <p class="text-sm text-neutral-500 mt-1">Sélectionnez le niveau d'études (Licence 1, 2 ou 3) :</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {% for niveau in niveaux %}
+        <a href="{% url 'filieres:filieres' niveau.id %}"
+           class="group bg-white hover:bg-emerald-50/50 border border-neutral-200 hover:border-emerald-400 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
+            <div class="flex items-center justify-between mb-4">
+                <span class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 font-extrabold text-xl flex items-center justify-center shadow-inner group-hover:bg-emerald-600 group-hover:text-white transition">
+                    {{ niveau.libelle }}
+                </span>
+                <span class="text-xs font-semibold text-neutral-400 group-hover:text-emerald-700 flex items-center gap-1">
+                    Voir filières
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </span>
+            </div>
+            <h3 class="text-lg font-bold text-neutral-800 group-hover:text-emerald-950">
+                {% if niveau.libelle == 'L1' %}Première Année (Licence 1)
+                {% elif niveau.libelle == 'L2' %}Deuxième Année (Licence 2)
+                {% elif niveau.libelle == 'L3' %}Troisième Année (Licence 3)
+                {% else %}Niveau {{ niveau.libelle }}{% endif %}
+            </h3>
+            <p class="text-xs text-neutral-400 mt-1">Consulter l'ensemble des départements et filières</p>
+        </a>
+        {% empty %}
+        <div class="col-span-3 text-center py-12 bg-white rounded-2xl border border-neutral-200 p-8">
+            <p class="text-neutral-500 font-medium">Aucun niveau d'études n'a encore été créé pour l'année {{ annee.libelle }}.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

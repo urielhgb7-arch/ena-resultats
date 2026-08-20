@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Semestres — {{ filiere.nom }}{% if specialite %} ({{ specialite.nom }}){% endif %} — Résultats ENA{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+            {{ filiere.niveau.annee.libelle }} &bull; {{ filiere.niveau.libelle }} &bull; {{ filiere.nom }}
+            {% if specialite %}&bull; {{ specialite.nom }}{% endif %}
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-neutral-900 mt-1">Semestres académiques</h1>
+        <p class="text-sm text-neutral-500 mt-1">Sélectionnez le semestre concerné :</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {% for semestre in semestres %}
+        <a href="{% url 'filieres:sessions' semestre.id %}{% if specialite %}?specialite_id={{ specialite.id }}{% endif %}"
+           class="group bg-white hover:bg-emerald-50/40 border border-neutral-200 hover:border-emerald-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+                        {{ semestre.get_type_display }}
+                    </span>
+                    <h3 class="text-xl font-bold text-neutral-900 group-hover:text-emerald-900 mt-0.5">{{ semestre.libelle }}</h3>
+                    <p class="text-xs text-neutral-400 mt-1">Voir les sessions d'examen et procès-verbaux</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-emerald-100 group-hover:bg-emerald-600 text-emerald-800 group-hover:text-white flex items-center justify-center font-bold text-sm shadow-sm transition flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="col-span-2 text-center py-12 bg-white rounded-2xl border border-neutral-200 p-8">
+            <p class="text-neutral-500 font-medium">Aucun semestre enregistré pour cette filière.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

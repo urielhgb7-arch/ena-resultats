@@ -1,18 +1,89 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="text-center mb-8">
-    <h1 class="text-2xl font-semibold mb-2">Consultez vos résultats</h1>
-    <input type="text" placeholder="Nom et prénom, ou matricule..."
-        class="w-full max-w-md mx-auto border border-neutral-300 rounded-lg px-4 py-3">
-</div>
 
-<h2 class="text-lg font-medium mb-3">Choisir une année académique</h2>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    {% for annee in annees %}
-        <a href="{% url 'filieres:niveaux' annee.id %}"
-           class="block bg-white rounded-xl shadow p-5 hover:shadow-md transition">
-            {{ annee.libelle }}
-        </a>
-    {% endfor %}
+{% block title %}Accueil — Résultats ENA{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Hero / En-tête de bienvenue -->
+    <div class="bg-gradient-to-br from-emerald-800 to-teal-950 text-white rounded-2xl p-8 shadow-xl text-center relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-2xl mx-auto relative z-10">
+            <span class="inline-block px-3 py-1 bg-emerald-700/60 text-emerald-200 border border-emerald-500/30 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+                Portail Officiel des Résultats
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">
+                École Nationale d'Administration
+            </h1>
+            <p class="text-emerald-100/90 text-sm sm:text-base leading-relaxed mb-6">
+                Consultez vos procès-verbaux d'évaluation académique, notes d'éléments constitutifs et moyennes d'UE en toute transparence.
+            </p>
+
+            <!-- Barre de recherche rapide personnelle -->
+            <div class="bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/20 shadow-inner max-w-lg mx-auto">
+                <form action="{% url 'resultats:recherche_personnelle' %}" method="get" class="flex gap-2">
+                    <input type="text" name="q" placeholder="Rechercher par Nom, Prénom ou Matricule..."
+                           class="flex-1 bg-white text-neutral-800 placeholder-neutral-400 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 shadow-sm">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition shadow">
+                        Rechercher
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Année Active / Navigation directe -->
+    {% if annee_active %}
+    <div class="bg-white border border-neutral-200/80 rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Année Académique Active</span>
+                <h2 class="text-xl font-bold text-neutral-900">{{ annee_active.libelle }}</h2>
+            </div>
+            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> En cours
+            </span>
+        </div>
+
+        <p class="text-xs text-neutral-500 mb-4">Choisissez un niveau d'études pour accéder aux filières :</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {% for niveau in niveaux_actifs %}
+            <a href="{% url 'filieres:filieres' niveau.id %}"
+               class="group block bg-neutral-50 hover:bg-emerald-50 border border-neutral-200 hover:border-emerald-300 rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-neutral-400 group-hover:text-emerald-600">Niveau d'études</span>
+                        <h3 class="text-lg font-bold text-neutral-800 group-hover:text-emerald-900">{{ niveau.libelle }}</h3>
+                    </div>
+                    <div class="w-9 h-9 rounded-full bg-white group-hover:bg-emerald-600 text-neutral-400 group-hover:text-white flex items-center justify-center shadow-sm transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <p class="text-sm text-neutral-500 italic col-span-3">Aucun niveau configuré pour cette année.</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Archives des autres années académiques -->
+    <div class="space-y-3">
+        <h3 class="text-base font-bold text-neutral-700">Toutes les années académiques</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {% for annee in annees %}
+            <a href="{% url 'filieres:niveaux' annee.id %}"
+               class="block bg-white hover:bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-center transition hover:border-neutral-300 shadow-sm">
+                <span class="text-sm font-semibold text-neutral-800">{{ annee.libelle }}</span>
+                {% if annee.active %}
+                    <span class="block text-[10px] text-emerald-600 font-bold mt-1">Session active</span>
+                {% else %}
+                    <span class="block text-[10px] text-neutral-400 mt-1">Archive</span>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}
