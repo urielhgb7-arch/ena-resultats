@@ -1,0 +1,37 @@
+{% for resultat in resultats %}
+<tr class="hover:bg-emerald-50/40 transition border-b border-neutral-100 last:border-0">
+    <td class="px-4 py-3.5 text-xs font-bold text-neutral-400 text-center font-mono">
+        #{{ forloop.counter }}
+    </td>
+    <td class="px-4 py-3.5 font-mono text-xs font-bold text-neutral-700">
+        {{ resultat.etudiant.matricule|default:"—" }}
+    </td>
+    <td class="px-4 py-3.5 font-bold text-neutral-900">
+        {{ resultat.etudiant.nom }} {{ resultat.etudiant.prenom }}
+    </td>
+    {% for note_val in resultat.ec_notes %}
+    <td class="px-4 py-3.5 text-center font-mono text-sm font-semibold text-neutral-700">
+        {{ note_val }}
+    </td>
+    {% endfor %}
+    <td class="px-4 py-3.5 text-right font-mono text-sm font-extrabold text-neutral-900 bg-neutral-50/50">
+        {{ resultat.moyenne_ue }} / 20
+    </td>
+    <td class="px-4 py-3.5 text-center">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm
+            {% if resultat.statut == 'V' %}bg-emerald-100 text-emerald-800 border border-emerald-300
+            {% elif resultat.statut == 'V*' %}bg-teal-100 text-teal-800 border border-teal-300
+            {% else %}bg-red-100 text-red-800 border border-red-300{% endif %}">
+            {% if resultat.statut == 'V' %}✅ Validé
+            {% elif resultat.statut == 'V*' %}✨ Validé*
+            {% else %}❌ Non validé{% endif %}
+        </span>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="{{ ecs|length|add:5 }}" class="px-4 py-12 text-center text-neutral-400 italic">
+        Aucun étudiant ne correspond à votre recherche.
+    </td>
+</tr>
+{% endfor %}

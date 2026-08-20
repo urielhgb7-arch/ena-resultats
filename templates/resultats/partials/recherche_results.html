@@ -1,0 +1,97 @@
+{% if q %}
+<div class="space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-neutral-600">
+            {% if count > 0 %}
+                🎯 <b>{{ count }}</b> étudiant(s) trouvé(s) pour "<span class="text-emerald-700 font-semibold">{{ q }}</span>"
+            {% else %}
+                🔍 Aucun résultat pour "<span class="text-neutral-700">{{ q }}</span>"
+            {% endif %}
+        </h2>
+    </div>
+
+    {% for item in etudiants_data %}
+    <div class="bg-white border border-neutral-200/90 hover:border-emerald-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition duration-200 space-y-5">
+        <!-- En-tête Étudiant -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-100 pb-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs flex items-center justify-center">
+                        🎓
+                    </span>
+                    <h3 class="text-xl font-extrabold text-neutral-900">
+                        {{ item.etudiant.nom }} {{ item.etudiant.prenom }}
+                    </h3>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-neutral-500 font-mono">
+                    <span>Matricule : <b>{{ item.etudiant.matricule|default:"Non renseigné" }}</b></span>
+                    {% if item.etudiant.annee_promo %}
+                    <span>&bull; Promotion : <b>{{ item.etudiant.annee_promo }}</b></span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Synthèse Crédits ECTS -->
+            <div class="bg-emerald-50 border border-emerald-200/80 rounded-xl px-4 py-2 text-right">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">Crédits ECTS validés</span>
+                <span class="text-lg font-black text-emerald-700">{{ item.credits_valides }}</span>
+                <span class="text-xs text-emerald-600 font-medium">/ {{ item.credits_inscrits }} inscrits</span>
+            </div>
+        </div>
+
+        <!-- Relevé des Unités d'Enseignement -->
+        <div class="space-y-2">
+            <span class="text-xs font-extrabold text-neutral-400 uppercase tracking-wider block">
+                Procès-verbaux & Unités d'Enseignement
+            </span>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {% for res in item.resultats %}
+                <div class="bg-neutral-50 hover:bg-white border border-neutral-200/70 hover:border-emerald-300 rounded-xl p-4 transition shadow-sm flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="font-mono text-xs font-black px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">
+                                {{ res.ue.code }}
+                            </span>
+                            <span class="text-xs font-semibold text-neutral-500">
+                                {{ res.ue.credits }} Crédit(s)
+                            </span>
+                        </div>
+                        <h4 class="text-sm font-bold text-neutral-900 leading-snug">{{ res.ue.nom }}</h4>
+                        <p class="text-[11px] text-neutral-400 mt-0.5">
+                            {{ res.ue.session.semestre.filiere.nom }} &bull; {{ res.ue.session.get_type_display }}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-neutral-200/50">
+                        <div>
+                            <span class="text-xs text-neutral-400">Moyenne :</span>
+                            <span class="text-base font-extrabold text-neutral-900 ml-1">{{ res.moyenne_ue }} / 20</span>
+                        </div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+                            {% if res.statut == 'V' %}bg-emerald-100 text-emerald-800 border border-emerald-200
+                            {% elif res.statut == 'V*' %}bg-teal-100 text-teal-800 border border-teal-200
+                            {% else %}bg-red-100 text-red-800 border border-red-200{% endif %}">
+                            {% if res.statut == 'V' %}Validé
+                            {% elif res.statut == 'V*' %}Validé*
+                            {% else %}Non validé{% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-xs text-neutral-400 italic col-span-2 py-2">
+                    Aucun résultat publié pour cet étudiant pour le moment.
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="bg-white border border-neutral-200 rounded-2xl p-12 text-center text-neutral-500 space-y-2">
+        <span class="text-3xl block">🔎</span>
+        <p class="font-semibold text-neutral-700">Aucun étudiant ne correspond à "{{ q }}".</p>
+        <p class="text-xs text-neutral-400">Vérifiez l'orthographe de votre nom ou la composition exacte de votre numéro matricule.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

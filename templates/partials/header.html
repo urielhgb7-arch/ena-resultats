@@ -1,15 +1,25 @@
-<!--
-    REMPLACER ce header par l'export Figma une fois disponible.
-    Structure minimale conservée pour que le reste du site fonctionne
-    en attendant.
--->
-<header class="bg-emerald-700 text-white">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="{% url 'filieres:accueil' %}" class="font-semibold text-lg">
-            Résultats ENA
+<header class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
+        <a href="{% url 'filieres:accueil' %}" class="flex items-center gap-2.5 group">
+            <span class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center font-black text-emerald-300 group-hover:scale-105 transition">
+                ENA
+            </span>
+            <div>
+                <span class="font-extrabold text-base tracking-tight block leading-tight">Résultats ENA</span>
+                <span class="text-[10px] text-emerald-200/80 font-medium block">Bureau d'Union des Entités</span>
+            </div>
         </a>
-        <nav class="text-sm">
-            <a href="#" class="hover:underline">Contact</a>
+        <nav class="flex items-center gap-4 text-xs sm:text-sm font-medium">
+            <a href="{% url 'filieres:accueil' %}" class="hover:text-emerald-200 transition">
+                Filières
+            </a>
+            <a href="{% url 'resultats:recherche_personnelle' %}" class="hover:text-emerald-200 transition flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                Mes Résultats
+            </a>
+            <a href="/admin/" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg border border-white/20 transition">
+                Espace Admin
+            </a>
         </nav>
     </div>
 </header>

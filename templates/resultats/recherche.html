@@ -1,66 +1,97 @@
 {% extends "base.html" %}
 
-{% block title %}Recherche de Résultats — Résultats ENA{% endblock %}
+{% block title %}Recherche Personnelle — Résultats ENA{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <div class="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
-        <h1 class="text-2xl font-bold text-neutral-900 mb-4">Recherche Personnelle de Résultats</h1>
-        <form method="get" class="flex gap-2 max-w-xl">
-            <input type="text" name="q" value="{{ q }}" placeholder="Saisissez votre matricule ou votre nom..."
-                   class="flex-1 border border-neutral-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition shadow-sm">
-                Rechercher
-            </button>
+<div class="space-y-6" x-data="{ mode: '{{ mode|default:"auto" }}' }">
+    <!-- En-tête de la recherche -->
+    <div class="bg-white border border-neutral-200/80 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div class="max-w-2xl">
+            <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full mb-2 uppercase tracking-wider">
+                Espace Étudiant
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-neutral-900 tracking-tight">
+                Consultez vos Notes & Relevé Individuel
+            </h1>
+            <p class="text-sm text-neutral-500 mt-1">
+                Entrez votre numéro matricule ou votre nom complet pour accéder à l'ensemble de vos procès-verbaux d'évaluation et crédits ECTS.
+            </p>
+        </div>
+
+        <!-- Formulaire de recherche avec filtres et HTMX instantané -->
+        <form method="get" class="mt-6 space-y-4"
+              hx-get="{% url 'resultats:recherche_personnelle' %}"
+              hx-target="#search-results"
+              hx-trigger="submit">
+
+            <!-- Sélecteur de mode (Pills Alpine.js) -->
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-semibold text-neutral-500 mr-1">Rechercher par :</span>
+                <label class="cursor-pointer">
+                    <input type="radio" name="mode" value="auto" x-model="mode" class="hidden"
+                           @change="$dispatch('submit')">
+                    <span :class="mode === 'auto' ? 'bg-emerald-800 text-white font-bold' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'"
+                          class="px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm inline-block">
+                        ⚡ Tout (Automatique)
+                    </span>
+                </label>
+                <label class="cursor-pointer">
+                    <input type="radio" name="mode" value="matricule" x-model="mode" class="hidden"
+                           @change="$dispatch('submit')">
+                    <span :class="mode === 'matricule' ? 'bg-emerald-800 text-white font-bold' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'"
+                          class="px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm inline-block">
+                        🔢 N° Matricule
+                    </span>
+                </label>
+                <label class="cursor-pointer">
+                    <input type="radio" name="mode" value="nom" x-model="mode" class="hidden"
+                           @change="$dispatch('submit')">
+                    <span :class="mode === 'nom' ? 'bg-emerald-800 text-white font-bold' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'"
+                          class="px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm inline-block">
+                        🔤 Nom & Prénom(s)
+                    </span>
+                </label>
+            </div>
+
+            <!-- Champ de saisie -->
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" name="q" value="{{ q }}"
+                           :placeholder="mode === 'matricule' ? 'Ex: ENA2025001...' : (mode === 'nom' ? 'Ex: KOUASSI Ablan...' : 'Entrez votre nom ou matricule...')"
+                           hx-get="{% url 'resultats:recherche_personnelle' %}"
+                           hx-target="#search-results"
+                           hx-trigger="keyup changed delay:250ms"
+                           hx-include="[name='mode']"
+                           autofocus
+                           class="w-full pl-11 pr-4 py-3.5 text-sm sm:text-base bg-neutral-50 border border-neutral-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition shadow-inner">
+                </div>
+                <button type="submit"
+                        class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 py-3.5 rounded-xl text-sm transition shadow-sm flex items-center gap-2">
+                    <span>Rechercher</span>
+                </button>
+            </div>
         </form>
     </div>
 
-    {% if q %}
-    <div class="space-y-4">
-        <h2 class="text-base font-bold text-neutral-700">Résultats pour "{{ q }}" :</h2>
-        {% for etudiant in etudiants %}
-        <div class="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm space-y-4">
-            <div class="flex items-center justify-between border-b border-neutral-100 pb-3">
-                <div>
-                    <h3 class="text-lg font-bold text-neutral-900">{{ etudiant.nom }} {{ etudiant.prenom }}</h3>
-                    <span class="text-xs font-mono text-neutral-500 font-semibold">Matricule : {{ etudiant.matricule|default:"Non renseigné" }}</span>
-                </div>
-                {% if etudiant.annee_promo %}
-                <span class="px-2.5 py-0.5 bg-neutral-100 text-neutral-600 rounded-md text-xs font-medium">Promo {{ etudiant.annee_promo }}</span>
-                {% endif %}
-            </div>
+    <!-- Conteneur des Résultats dynamiques HTMX -->
+    <div id="search-results">
+        {% include "resultats/partials/recherche_results.html" %}
+    </div>
 
-            <!-- Résultats par UE -->
-            <div class="space-y-2">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Unités d'Enseignement validées / évaluées</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {% for res in etudiant.resultats_ue.all %}
-                    <div class="bg-neutral-50 border border-neutral-200/80 rounded-xl p-3.5 flex items-center justify-between">
-                        <div>
-                            <span class="font-mono text-xs font-bold text-emerald-800">{{ res.ue.code }}</span>
-                            <p class="text-xs font-medium text-neutral-800">{{ res.ue.nom }}</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-sm font-bold text-neutral-900">{{ res.moyenne_ue }} / 20</span>
-                            <span class="block text-[11px] font-bold
-                                {% if res.statut == 'V' %}text-emerald-600
-                                {% elif res.statut == 'V*' %}text-teal-600
-                                {% else %}text-red-600{% endif %}">
-                                {{ res.get_statut_display }}
-                            </span>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p class="text-xs text-neutral-400 italic">Aucun résultat d'UE enregistré.</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="bg-white border border-neutral-200 rounded-2xl p-8 text-center text-neutral-500">
-            Aucun étudiant trouvé correspondant à "{{ q }}".
-        </div>
-        {% endfor %}
+    {% if not q %}
+    <!-- Guide d'aide à la consultation -->
+    <div class="bg-neutral-50 border border-neutral-200/80 rounded-2xl p-6 text-neutral-600 text-xs sm:text-sm space-y-3">
+        <h3 class="font-bold text-neutral-900 flex items-center gap-2 text-sm">
+            <span>💡</span> Bon à savoir pour la consultation de vos résultats
+        </h3>
+        <ul class="list-disc pl-5 space-y-1.5 text-neutral-500">
+            <li><b>Matricule</b> : La recherche par matricule est la plus rapide et la plus précise pour obtenir directement votre relevé.</li>
+            <li><b>Recherche par Nom</b> : Vous pouvez taper votre nom de famille seul ou suivi de votre prénom.</li>
+            <li><b>Légende des statuts</b> : <span class="text-emerald-700 font-bold">V</span> = Validé (&ge; 10/20) &bull; <span class="text-teal-700 font-bold">V*</span> = Validé par compensation &bull; <span class="text-red-700 font-bold">NV</span> = Non validé (&lt; 10/20).</li>
+        </ul>
     </div>
     {% endif %}
 </div>
