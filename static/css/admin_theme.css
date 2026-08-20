@@ -1,0 +1,166 @@
+/*
+  admin_theme.css
+  Design Monster - Unified Premium Dark Theme for ENA Admin Portal
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Design Monster Dark Mode Tokens */
+  --bg-base: hsl(222, 47%, 5%);
+  --bg-surface: hsl(222, 35%, 9%);
+  --bg-elevated: hsl(222, 25%, 13%);
+  --accent: hsl(187, 100%, 50%); /* Neon Cyan */
+  --accent-2: hsl(271, 91%, 65%); /* Violet */
+  --accent-hover: hsl(271, 91%, 75%);
+  --text-1: hsl(0, 0%, 96%);
+  --text-2: hsl(222, 20%, 60%);
+  --border: rgba(255, 255, 255, 0.07);
+
+  /* Animation */
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 350ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Django Admin Overrides */
+  --primary: var(--accent-2);
+  --secondary: var(--bg-elevated);
+  --header-color: var(--text-1);
+  --header-bg: var(--bg-surface);
+  --header-link-color: var(--text-1);
+  --breadcrumbs-fg: var(--text-2);
+  --breadcrumbs-bg: var(--bg-base);
+  --breadcrumbs-link-fg: var(--accent-2);
+  --link-fg: var(--accent-2);
+  --link-hover-color: var(--accent-hover);
+  --link-selected-fg: var(--text-1);
+  --body-fg: var(--text-1);
+  --body-bg: var(--bg-base);
+  --body-quiet-color: var(--text-2);
+  --body-loud-color: var(--text-1);
+  --message-success-bg: rgba(5, 150, 105, 0.2);
+  --message-warning-bg: rgba(217, 119, 6, 0.2);
+  --message-error-bg: rgba(220, 38, 38, 0.2);
+  --darkened-bg: var(--bg-elevated);
+  --selected-bg: rgba(124, 58, 237, 0.2);
+  --selected-row: rgba(124, 58, 237, 0.1);
+  --button-fg: #fff;
+  --button-bg: var(--accent-2);
+  --button-hover-bg: var(--accent-hover);
+  --default-button-bg: var(--accent-2);
+  --default-button-hover-bg: var(--accent-hover);
+  --close-button-bg: #888;
+  --close-button-hover-bg: #747474;
+  --delete-button-bg: #ba2121;
+  --delete-button-hover-bg: #a41515;
+  --object-tools-fg: var(--button-fg);
+  --object-tools-bg: var(--bg-elevated);
+  --object-tools-hover-bg: var(--bg-surface);
+}
+
+/* Global Typography & Resets */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-1);
+}
+h1, h2, h3, h4, h5, h6, .module h2, #header {
+  font-family: 'Space Grotesk', system-ui, sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+/* Scrollbar premium */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ----------------------------------------------------
+   DJANGO ADMIN PREMIUM OVERRIDES
+   ---------------------------------------------------- */
+#header {
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  background: rgba(13, 20, 37, 0.8) !important;
+}
+#branding h1 {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text-1);
+}
+#branding h1 a:link, #branding h1 a:visited {
+  color: var(--text-1);
+}
+
+/* Dashboard Modules (Cards) */
+.module {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  margin-bottom: 24px !important;
+}
+.module h2, .module caption, .inline-group h2 {
+  background: var(--bg-elevated) !important;
+  color: var(--text-1) !important;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
+}
+.module table th, .module table td {
+  border-bottom: 1px solid var(--border) !important;
+}
+.row1 { background: transparent !important; }
+.row2 { background: rgba(255,255,255,0.02) !important; }
+
+/* Buttons */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  background: var(--button-bg) !important;
+  border-radius: 8px !important;
+  border: none !important;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  padding: 10px 20px !important;
+  transition: all var(--dur-base) var(--ease-out);
+}
+.button:hover, input[type=submit]:hover {
+  background: var(--button-hover-bg) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+/* Inputs & Forms */
+input[type=text], input[type=password], input[type=email], input[type=url], input[type=number], select, textarea {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-1) !important;
+  border-radius: 6px !important;
+  padding: 8px 12px;
+  font-family: 'Inter', sans-serif;
+}
+input[type=text]:focus, select:focus, textarea:focus {
+  border-color: var(--accent-2) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* Glassmorphism utility for generic use */
+.glass-panel {
+  background: rgba(13, 20, 37, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}

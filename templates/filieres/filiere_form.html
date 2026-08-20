@@ -1,0 +1,97 @@
+{% extends "portail_admin/base_dashboard.html" %}
+
+{% block title %}{% if object %}Modifier Filière{% else %}Nouvelle Filière{% endif %} | Administration{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-8">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-white tracking-wide">
+        {% if object %}Modifier la filière{% else %}Nouvelle filière{% endif %}
+      </h1>
+      <p class="text-gray-400 mt-2">Veuillez remplir les informations de la filière ci-dessous.</p>
+    </div>
+    <a href="{% url 'filieres:list' %}" class="p-2 bg-surface border border-bordercol rounded-xl hover:bg-surface-light text-gray-300 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Form Container -->
+  <div class="bg-surface/50 backdrop-blur-xl border border-bordercol rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+    
+    <!-- Neon Glow Background -->
+    <div class="absolute -top-32 -right-32 w-64 h-64 bg-brand-violet/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <form method="post" class="space-y-6 relative z-10">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+        <div class="text-sm text-red-400">
+          {{ form.non_field_errors }}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="space-y-4">
+        <!-- Niveau -->
+        <div class="space-y-1.5">
+          <label for="{{ form.niveau.id_for_label }}" class="text-sm font-medium text-gray-300 block">Niveau *</label>
+          {{ form.niveau }}
+          {% if form.niveau.errors %}
+            <p class="text-sm text-red-400 mt-1">{{ form.niveau.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Nom -->
+        <div class="space-y-1.5">
+          <label for="{{ form.nom.id_for_label }}" class="text-sm font-medium text-gray-300 block">Nom de la filière *</label>
+          {{ form.nom }}
+          {% if form.nom.errors %}
+            <p class="text-sm text-red-400 mt-1">{{ form.nom.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Toggles -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-bordercol/50 mt-6">
+          <div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-bordercol">
+            <div>
+              <label for="{{ form.a_des_specialites.id_for_label }}" class="text-sm font-medium text-white block">A des spécialités ?</label>
+              <p class="text-xs text-gray-500 mt-1">Cochez si la filière contient plusieurs spécialités.</p>
+            </div>
+            {{ form.a_des_specialites }}
+          </div>
+
+          <div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-bordercol">
+            <div>
+              <label for="{{ form.specialite_unique_auto.id_for_label }}" class="text-sm font-medium text-white block">Spécialité unique auto ?</label>
+              <p class="text-xs text-gray-500 mt-1">Si cochée, saute l'écran de sélection de spécialité.</p>
+            </div>
+            {{ form.specialite_unique_auto }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-6">
+        <a href="{% url 'filieres:list' %}" 
+           class="px-6 py-2.5 rounded-xl border border-bordercol text-gray-300 hover:bg-surface-light transition-colors font-medium">
+          Annuler
+        </a>
+        <button type="submit" 
+                class="px-6 py-2.5 bg-brand-violet hover:bg-brand-violet/90 text-white font-medium rounded-xl transition-all shadow-lg shadow-brand-violet/20 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Enregistrer
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

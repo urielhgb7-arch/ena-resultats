@@ -1,0 +1,184 @@
+{% extends "portail_admin/base_dashboard.html" %}
+
+{% block title %}Nouvel Import{% endblock %}
+
+{% block extra_css %}
+<style>
+  .drop-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    background: rgba(13, 20, 37, 0.3);
+    transition: all 0.3s ease;
+  }
+  .drop-zone.dragover {
+    border-color: hsl(187, 100%, 50%);
+    background: rgba(0, 229, 255, 0.05);
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.1) inset;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+  <a href="{% url 'imports:list' %}" class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-medium mb-4">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    Retour à la liste
+  </a>
+  <h1 class="text-3xl font-display font-bold text-white tracking-tight">Nouvel Import</h1>
+  <p class="mt-2 text-sm text-slate-400 font-medium">Glissez-déposez un fichier Excel pour importer de nouvelles données.</p>
+</div>
+
+{% if messages %}
+<div class="mb-6 space-y-2">
+  {% for message in messages %}
+  <div class="p-4 rounded-xl {% if message.tags == 'error' %}bg-red-500/10 border border-red-500/20 text-red-400{% else %}bg-brand/10 border border-brand/20 text-brand{% endif %} text-sm font-medium">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="glass-panel rounded-2xl p-8 max-w-3xl mx-auto">
+  <form id="upload-form" method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+    
+    <div id="drop-zone" class="drop-zone rounded-2xl p-12 text-center cursor-pointer flex flex-col items-center justify-center min-h-[300px]">
+      <div id="upload-icon" class="w-16 h-16 rounded-full bg-brand-violet/10 border border-brand-violet/20 flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
+        <svg class="w-8 h-8 text-brand-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+      </div>
+      
+      <h3 id="upload-text" class="text-xl font-display font-bold text-white mb-2">Glissez-déposez votre fichier ici</h3>
+      <p id="upload-subtext" class="text-sm text-slate-400">ou cliquez pour parcourir les fichiers locaux</p>
+      
+      <!-- Hidden file input -->
+      {{ form.fichier }}
+      
+      <div id="file-info" class="hidden mt-6 bg-elevated border border-bordercol px-6 py-4 rounded-xl flex items-center gap-4 text-left w-full max-w-md">
+        <svg class="w-8 h-8 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <div class="min-w-0">
+          <div id="file-name" class="text-sm font-bold text-white truncate">nom_du_fichier.xlsx</div>
+          <div id="file-size" class="text-xs text-slate-400 font-mono mt-0.5">0 KB</div>
+        </div>
+        <button type="button" id="remove-file" class="ml-auto p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    
+    <div id="submit-container" class="hidden flex justify-center">
+      <button type="submit" class="group relative px-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-lg hover:bg-slate-200 transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)] flex items-center gap-3 overflow-hidden">
+        <span class="relative z-10">Lancer l'extraction</span>
+        <svg class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-upload');
+  const uploadIcon = document.getElementById('upload-icon');
+  const uploadText = document.getElementById('upload-text');
+  const uploadSubtext = document.getElementById('upload-subtext');
+  const fileInfo = document.getElementById('file-info');
+  const fileNameDisplay = document.getElementById('file-name');
+  const fileSizeDisplay = document.getElementById('file-size');
+  const removeBtn = document.getElementById('remove-file');
+  const submitContainer = document.getElementById('submit-container');
+
+  // Clic pour parcourir
+  dropZone.addEventListener('click', (e) => {
+    if(e.target !== removeBtn && !removeBtn.contains(e.target)) {
+      fileInput.click();
+    }
+  });
+
+  // Drag over
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  // Drag leave
+  dropZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+  });
+
+  // Drop
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      updateFileInfo();
+    }
+  });
+
+  // Change via dialog
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) {
+      updateFileInfo();
+    }
+  });
+
+  // Remove file
+  removeBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Évite de rouvrir le sélecteur
+    fileInput.value = '';
+    resetFileInfo();
+  });
+
+  function updateFileInfo() {
+    const file = fileInput.files[0];
+    if(file) {
+      // Hide initial text
+      uploadIcon.classList.add('hidden');
+      uploadText.classList.add('hidden');
+      uploadSubtext.classList.add('hidden');
+      
+      // Show file info
+      fileNameDisplay.textContent = file.name;
+      fileSizeDisplay.textContent = formatBytes(file.size);
+      fileInfo.classList.remove('hidden');
+      
+      // Change dropzone style to indicate success
+      dropZone.classList.add('border-emerald-500/50', 'bg-emerald-500/5');
+      dropZone.classList.remove('border-[rgba(255,255,255,0.15)]');
+      
+      // Show submit button
+      submitContainer.classList.remove('hidden');
+    }
+  }
+
+  function resetFileInfo() {
+    // Show initial text
+    uploadIcon.classList.remove('hidden');
+    uploadText.classList.remove('hidden');
+    uploadSubtext.classList.remove('hidden');
+    
+    // Hide file info
+    fileInfo.classList.add('hidden');
+    
+    // Reset dropzone style
+    dropZone.classList.remove('border-emerald-500/50', 'bg-emerald-500/5');
+    dropZone.classList.add('border-[rgba(255,255,255,0.15)]');
+    
+    // Hide submit button
+    submitContainer.classList.add('hidden');
+  }
+
+  function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+</script>
+{% endblock %}

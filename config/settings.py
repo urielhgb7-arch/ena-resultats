@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     "apps.resultats",
     "apps.imports",
     "apps.accounts",
+    "apps.portail_admin",
+    
     "simple_history",
     "django_q",
 ]
@@ -83,6 +85,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.UtilisateurAdmin"
 
+LOGIN_URL = "admin:login"
+LOGIN_REDIRECT_URL = "dashboard_validateur"
+LOGOUT_REDIRECT_URL = "admin:login"
 
 # --- OWASP ASVS & Security Base Hardening ---
 # 4.1 Authentification et mots de passe

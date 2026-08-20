@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | ENA Admin{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <!-- Injection of Google Fonts for Design Monster -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Injection of Unified Admin Theme -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin_theme.css' %}">
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">ENA Admin</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

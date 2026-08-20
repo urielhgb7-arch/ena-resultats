@@ -282,3 +282,49 @@ def recherche_avancee(request):
         "breadcrumb": breadcrumb,
     }
     return render(request, "resultats/recherche_avancee.html", context)
+
+
+# --- ADMIN CBVs ---
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
+from apps.portail_admin.mixins import AdminRequiredMixin
+from .forms import UEForm
+
+class UEListView(AdminRequiredMixin, ListView):
+    model = UE
+    template_name = "resultats/ue_list.html"
+    context_object_name = "ues"
+    paginate_by = 20
+
+    def get_queryset(self):
+        return UE.objects.select_related('session__semestre__filiere').all().order_by('-id')
+
+class UECreateView(AdminRequiredMixin, CreateView):
+    model = UE
+    form_class = UEForm
+    template_name = "resultats/ue_form.html"
+    success_url = reverse_lazy("resultats:ue_list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "L'UE a été créée avec succès.")
+        return super().form_valid(form)
+
+class UEUpdateView(AdminRequiredMixin, UpdateView):
+    model = UE
+    form_class = UEForm
+    template_name = "resultats/ue_form.html"
+    success_url = reverse_lazy("resultats:ue_list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "L'UE a été mise à jour avec succès.")
+        return super().form_valid(form)
+
+class UEDeleteView(AdminRequiredMixin, DeleteView):
+    model = UE
+    template_name = "resultats/ue_confirm_delete.html"
+    success_url = reverse_lazy("resultats:ue_list")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "L'UE a été supprimée avec succès.")
+        return super().delete(request, *args, **kwargs)

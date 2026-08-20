@@ -21,4 +21,10 @@ urlpatterns = [
     path("ajax/niveaux/", views.ajax_niveaux, name="ajax_niveaux"),
     path("ajax/filieres/", views.ajax_filieres, name="ajax_filieres"),
     path("ajax/semestres/", views.ajax_semestres, name="ajax_semestres"),
+    
+    # --- ADMIN CBVs ---
+    path("admin/list/", views.FiliereListView.as_view(), name="list"),
+    path("admin/nouveau/", views.FiliereCreateView.as_view(), name="create"),
+    path("admin/<int:pk>/modifier/", views.FiliereUpdateView.as_view(), name="update"),
+    path("admin/<int:pk>/supprimer/", views.FiliereDeleteView.as_view(), name="delete"),
 ]

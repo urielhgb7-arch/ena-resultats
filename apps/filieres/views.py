@@ -208,3 +208,49 @@ def ajax_semestres(request):
         for s in semestres:
             options.append(f'<option value="{s.id}">{s.libelle}</option>')
     return HttpResponse("\n".join(options))
+
+
+# --- ADMIN CBVs ---
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
+from apps.portail_admin.mixins import AdminRequiredMixin
+from .forms import FiliereForm
+
+class FiliereListView(AdminRequiredMixin, ListView):
+    model = Filiere
+    template_name = "filieres/filiere_list.html"
+    context_object_name = "filieres"
+    paginate_by = 20
+    
+    def get_queryset(self):
+        return Filiere.objects.select_related('niveau__annee').all()
+
+class FiliereCreateView(AdminRequiredMixin, CreateView):
+    model = Filiere
+    form_class = FiliereForm
+    template_name = "filieres/filiere_form.html"
+    success_url = reverse_lazy("filieres:list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "La filière a été créée avec succès.")
+        return super().form_valid(form)
+
+class FiliereUpdateView(AdminRequiredMixin, UpdateView):
+    model = Filiere
+    form_class = FiliereForm
+    template_name = "filieres/filiere_form.html"
+    success_url = reverse_lazy("filieres:list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "La filière a été mise à jour avec succès.")
+        return super().form_valid(form)
+
+class FiliereDeleteView(AdminRequiredMixin, DeleteView):
+    model = Filiere
+    template_name = "filieres/filiere_confirm_delete.html"
+    success_url = reverse_lazy("filieres:list")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "La filière a été supprimée avec succès.")
+        return super().delete(request, *args, **kwargs)

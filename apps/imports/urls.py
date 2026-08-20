@@ -4,6 +4,8 @@ from . import views
 app_name = "imports"
 
 urlpatterns = [
-    path("upload/", views.upload_fichier, name="upload"),
-    path("apercu/<int:import_id>/", views.apercu_import, name="apercu"),
+    path("", views.ImportFichierListView.as_view(), name="list"),
+    path("nouveau/", views.ImportFichierCreateView.as_view(), name="create"),
+    path("<int:pk>/", views.ImportFichierDetailView.as_view(), name="detail"),
+    path("<int:pk>/supprimer/", views.ImportFichierDeleteView.as_view(), name="delete"),
 ]

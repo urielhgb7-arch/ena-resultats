@@ -1,0 +1,119 @@
+{% extends "portail_admin/base_dashboard.html" %}
+
+{% block title %}{% if object %}Modifier UE{% else %}Nouvelle UE{% endif %} | Administration{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-8">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-white tracking-wide">
+        {% if object %}Modifier l'UE{% else %}Nouvelle UE{% endif %}
+      </h1>
+      <p class="text-gray-400 mt-2">Veuillez remplir les informations de l'Unité d'Enseignement.</p>
+    </div>
+    <a href="{% url 'resultats:ue_list' %}" class="p-2 bg-surface border border-bordercol rounded-xl hover:bg-surface-light text-gray-300 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Form Container -->
+  <div class="bg-surface/50 backdrop-blur-xl border border-bordercol rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+    
+    <!-- Neon Glow Background -->
+    <div class="absolute -top-32 -right-32 w-64 h-64 bg-brand-violet/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <form method="post" class="space-y-6 relative z-10">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+        <div class="text-sm text-red-400">
+          {{ form.non_field_errors }}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="space-y-4">
+        
+        <!-- Session -->
+        <div class="space-y-1.5">
+          <label for="{{ form.session.id_for_label }}" class="text-sm font-medium text-gray-300 block">Session *</label>
+          {{ form.session }}
+          {% if form.session.errors %}
+            <p class="text-sm text-red-400 mt-1">{{ form.session.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Code -->
+          <div class="space-y-1.5">
+            <label for="{{ form.code.id_for_label }}" class="text-sm font-medium text-gray-300 block">Code UE *</label>
+            {{ form.code }}
+            {% if form.code.errors %}
+              <p class="text-sm text-red-400 mt-1">{{ form.code.errors.0 }}</p>
+            {% endif %}
+          </div>
+          
+          <!-- Crédits -->
+          <div class="space-y-1.5">
+            <label for="{{ form.credits.id_for_label }}" class="text-sm font-medium text-gray-300 block">Crédits *</label>
+            {{ form.credits }}
+            {% if form.credits.errors %}
+              <p class="text-sm text-red-400 mt-1">{{ form.credits.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Nom -->
+        <div class="space-y-1.5">
+          <label for="{{ form.nom.id_for_label }}" class="text-sm font-medium text-gray-300 block">Intitulé de l'UE *</label>
+          {{ form.nom }}
+          {% if form.nom.errors %}
+            <p class="text-sm text-red-400 mt-1">{{ form.nom.errors.0 }}</p>
+          {% endif %}
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Date Publication -->
+          <div class="space-y-1.5">
+            <label for="{{ form.date_publication.id_for_label }}" class="text-sm font-medium text-gray-300 block">Date de publication</label>
+            {{ form.date_publication }}
+            {% if form.date_publication.errors %}
+              <p class="text-sm text-red-400 mt-1">{{ form.date_publication.errors.0 }}</p>
+            {% endif %}
+          </div>
+          
+          <!-- Statut -->
+          <div class="space-y-1.5">
+            <label for="{{ form.statut.id_for_label }}" class="text-sm font-medium text-gray-300 block">Statut *</label>
+            {{ form.statut }}
+            {% if form.statut.errors %}
+              <p class="text-sm text-red-400 mt-1">{{ form.statut.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-6 border-t border-bordercol/50 mt-6">
+        <a href="{% url 'resultats:ue_list' %}" 
+           class="px-6 py-2.5 rounded-xl border border-bordercol text-gray-300 hover:bg-surface-light transition-colors font-medium">
+          Annuler
+        </a>
+        <button type="submit" 
+                class="px-6 py-2.5 bg-brand-violet hover:bg-brand-violet/90 text-white font-medium rounded-xl transition-all shadow-lg shadow-brand-violet/20 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Enregistrer
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
