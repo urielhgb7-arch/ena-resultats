@@ -1,3 +1,4 @@
+from simple_history.models import HistoricalRecords
 from django.db import models
 
 
@@ -35,6 +36,8 @@ class Filiere(models.Model):
     # --- flags d'exception : pilotables par la donnée, jamais codés en dur ---
     a_des_specialites = models.BooleanField(default=True)
     specialite_unique_auto = models.BooleanField(default=False)
+    history = HistoricalRecords()
+
 
     class Meta:
         ordering = ["nom"]

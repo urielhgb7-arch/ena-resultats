@@ -1,3 +1,4 @@
+from simple_history.admin import SimpleHistoryAdmin
 from django.contrib import admin
 from .models import AnneeAcademique, Niveau, Filiere, Specialite, Semestre, SessionResultat
 
@@ -16,7 +17,7 @@ class NiveauAdmin(admin.ModelAdmin):
 
 
 @admin.register(Filiere)
-class FiliereAdmin(admin.ModelAdmin):
+class FiliereAdmin(SimpleHistoryAdmin):
     list_display = ("nom", "niveau", "a_des_specialites", "specialite_unique_auto")
     list_filter = ("niveau", "a_des_specialites", "specialite_unique_auto")
     search_fields = ("nom",)

@@ -1,3 +1,4 @@
+from simple_history.admin import SimpleHistoryAdmin
 from django.contrib import admin
 from .models import MappingTemplate, ImportFichier, LigneBrute
 
@@ -8,7 +9,7 @@ class MappingTemplateAdmin(admin.ModelAdmin):
 
 
 @admin.register(ImportFichier)
-class ImportFichierAdmin(admin.ModelAdmin):
+class ImportFichierAdmin(SimpleHistoryAdmin):
     list_display = ("nom_fichier", "date_import", "utilisateur", "statut")
     list_filter = ("statut", "date_import")
     search_fields = ("nom_fichier",)

@@ -1,3 +1,4 @@
+from simple_history.models import HistoricalRecords
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -45,6 +46,8 @@ class UtilisateurAdmin(AbstractBaseUser, PermissionsMixin):
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['nom']
+    history = HistoricalRecords()
+
     
     class Meta:
         db_table = "utilisateur_admin"

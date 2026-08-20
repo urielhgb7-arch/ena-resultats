@@ -1,3 +1,4 @@
+from simple_history.models import HistoricalRecords
 from django.db import models
 from django.conf import settings
 
@@ -31,6 +32,8 @@ class ImportFichier(models.Model):
     statut = models.CharField(
         max_length=20, choices=STATUT_CHOICES, default="en_attente"
     )
+    history = HistoricalRecords()
+
 
     class Meta:
         ordering = ["-date_import"]

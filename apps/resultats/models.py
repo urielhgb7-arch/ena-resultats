@@ -1,3 +1,4 @@
+from simple_history.models import HistoricalRecords
 from django.db import models
 from apps.filieres.models import SessionResultat
 
@@ -20,6 +21,7 @@ class UE(models.Model):
     statut = models.CharField(
         max_length=20, choices=STATUT_CHOICES, default="brouillon"
     )
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "UE"
@@ -34,6 +36,7 @@ class EC(models.Model):
     ue = models.ForeignKey(UE, on_delete=models.CASCADE, related_name="ecs")
     code = models.CharField(max_length=10)                 # EC1, EC2
     nom = models.CharField(max_length=200)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "EC"
@@ -49,6 +52,7 @@ class Etudiant(models.Model):
     annee_promo = models.CharField(max_length=10, blank=True)
     nom = models.CharField(max_length=150)
     prenom = models.CharField(max_length=150)
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ["nom", "prenom"]
@@ -70,6 +74,8 @@ class NoteEC(models.Model):
         null=True, blank=True, related_name="notes_ec",
     )
     note = models.DecimalField(max_digits=4, decimal_places=2)
+    history = HistoricalRecords()
+
 
     class Meta:
         unique_together = ("etudiant", "ec")
@@ -98,6 +104,8 @@ class ResultatUE(models.Model):
     # dynamiquement depuis NoteEC, ce chiffre correspond au PV officiel signé.
     moyenne_ue = models.DecimalField(max_digits=4, decimal_places=2)
     statut = models.CharField(max_length=5, choices=STATUT_CHOICES)
+    history = HistoricalRecords()
+
 
     class Meta:
         unique_together = ("etudiant", "ue")
