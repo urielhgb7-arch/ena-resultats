@@ -175,6 +175,11 @@ def liste_ue(request, session_id):
         "ues": ues,
         "breadcrumb": breadcrumb,
     }
+    
+    # Écran spécifique Stage (Semestre 6)
+    if "semestre 6" in semestre.libelle.lower():
+        return render(request, "filieres/stage.html", context)
+        
     return render(request, "filieres/ue_liste.html", context)
 
 
@@ -210,6 +215,16 @@ def ajax_semestres(request):
     return HttpResponse("\n".join(options))
 
 
+def ajax_sessions(request):
+    semestre_id = request.GET.get("semestre_id")
+    options = ['<option value="">— Choisir une session —</option>']
+    if semestre_id:
+        sessions = SessionResultat.objects.filter(semestre_id=semestre_id)
+        for s in sessions:
+            options.append(f'<option value="{s.id}">{s.get_type_display()} ({s.id})</option>')
+    return HttpResponse("\n".join(options))
+
+
 # --- ADMIN CBVs ---
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -230,7 +245,7 @@ class FiliereCreateView(AdminRequiredMixin, CreateView):
     model = Filiere
     form_class = FiliereForm
     template_name = "filieres/filiere_form.html"
-    success_url = reverse_lazy("filieres:list")
+    success_url = reverse_lazy("filieres_admin:list")
 
     def form_valid(self, form):
         messages.success(self.request, "La filière a été créée avec succès.")
@@ -240,7 +255,7 @@ class FiliereUpdateView(AdminRequiredMixin, UpdateView):
     model = Filiere
     form_class = FiliereForm
     template_name = "filieres/filiere_form.html"
-    success_url = reverse_lazy("filieres:list")
+    success_url = reverse_lazy("filieres_admin:list")
 
     def form_valid(self, form):
         messages.success(self.request, "La filière a été mise à jour avec succès.")
@@ -249,7 +264,7 @@ class FiliereUpdateView(AdminRequiredMixin, UpdateView):
 class FiliereDeleteView(AdminRequiredMixin, DeleteView):
     model = Filiere
     template_name = "filieres/filiere_confirm_delete.html"
-    success_url = reverse_lazy("filieres:list")
+    success_url = reverse_lazy("filieres_admin:list")
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "La filière a été supprimée avec succès.")

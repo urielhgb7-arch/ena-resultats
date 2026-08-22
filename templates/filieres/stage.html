@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Soutenance de Stage (Semestre 6) — Résultats ENA{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="mb-4">
+        <h1 class="font-serif text-2xl sm:text-3xl font-bold text-neutral-900 mb-1">
+            Soutenance de Stage (Semestre 6)
+        </h1>
+        <p class="text-sm text-[#7A7970]">
+            {{ session.semestre.filiere.nom }} — {{ session.get_type_display }}
+        </p>
+    </div>
+
+    <div class="bg-white border border-black/10 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <p class="text-sm text-neutral-700 mb-6 leading-relaxed">
+            Le Semestre 6 est exclusivement consacré à la rédaction et la soutenance du mémoire de stage. 
+            Contrairement aux autres semestres, il ne comporte pas d'Unités d'Enseignement (UE) académiques standards.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for ue in ues %}
+            <a href="{% url 'resultats:ue_classement' ue.id %}" 
+               class="group block p-5 rounded-xl border border-black/10 hover:border-[#1F6F4A]/50 bg-white hover:bg-[#f0fdf4]/50 transition-all shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="font-bold text-neutral-900 group-hover:text-[#1F6F4A] transition-colors">
+                        {{ ue.nom }}
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#EDECE7] text-neutral-800">
+                        {{ ue.credits }} Crédits
+                    </span>
+                </div>
+                <div class="text-xs text-[#7A7970] mt-4 flex items-center justify-between">
+                    <span>Session : {{ session.get_type_display }}</span>
+                    <span class="text-[#1F6F4A] font-semibold group-hover:translate-x-1 transition-transform">Voir les résultats &rarr;</span>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-span-1 md:col-span-2 text-center p-8 bg-neutral-50 rounded-xl border border-dashed border-black/20">
+                <p class="text-sm text-[#7A7970] font-medium">Les résultats de soutenance ne sont pas encore publiés pour cette session.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

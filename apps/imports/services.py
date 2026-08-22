@@ -26,6 +26,14 @@ def extraire_lignes_brutes(fichier_path, import_fichier: ImportFichier):
     """
     wb = openpyxl.load_workbook(fichier_path, data_only=True)
     ws = wb.active
+    
+    mapping = import_fichier.mapping
+    config = mapping.config_colonnes if mapping else {}
+    col_numero = config.get("numero_col", 1) - 1
+    col_matricule = config.get("matricule_col", 2) - 1
+    col_nom = config.get("nom_prenoms_col", 3) - 1
+    min_row = config.get("data_start_row", 3)
+    ec_row = config.get("ec_row", 2)
 
     # Reconstitue quelle colonne appartient à quelle UE, via les cellules fusionnées
     ue_par_colonne = {}
@@ -38,23 +46,21 @@ def extraire_lignes_brutes(fichier_path, import_fichier: ImportFichier):
     lignes_creees = []
     ligne_num = 0
 
-    # Ligne 3 = première ligne étudiant (lignes 1-2 = en-têtes) - à ajuster
-    # selon le vrai fichier une fois obtenu.
-    for row in ws.iter_rows(min_row=3, values_only=False):
+    for row in ws.iter_rows(min_row=min_row, values_only=False):
         if row[0].value is None:  # ligne vide = fin du tableau
             continue
         ligne_num += 1
 
         donnees = {
-            "numero": row[0].value,
-            "matricule": row[1].value,
-            "nom_prenoms": row[2].value,
+            "numero": row[col_numero].value if col_numero < len(row) else None,
+            "matricule": row[col_matricule].value if col_matricule < len(row) else None,
+            "nom_prenoms": row[col_nom].value if col_nom < len(row) else None,
             "resultats_par_ue": {},
         }
 
         for col_idx, cell in enumerate(row, start=1):
             if col_idx in ue_par_colonne:
-                type_champ = ws.cell(2, col_idx).value  # EC1, EC2, Moy UE, R
+                type_champ = ws.cell(ec_row, col_idx).value  # EC1, EC2, Moy UE, R
                 ue_code = ue_par_colonne[col_idx]
                 donnees["resultats_par_ue"].setdefault(ue_code, {})
                 donnees["resultats_par_ue"][ue_code][str(type_champ)] = cell.value

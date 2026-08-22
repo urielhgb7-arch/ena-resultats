@@ -284,6 +284,33 @@ def recherche_avancee(request):
     return render(request, "resultats/recherche_avancee.html", context)
 
 
+def contact_signalement(request):
+    from .forms import ContactSignalementForm
+    from django.contrib import messages
+    
+    if request.method == "POST":
+        form = ContactSignalementForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Votre message a été envoyé avec succès. Nous vous répondrons dans les plus brefs délais.")
+            return redirect("resultats:contact")
+        else:
+            messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
+    else:
+        form = ContactSignalementForm()
+        
+    breadcrumb = [
+        {"label": "Accueil", "url": reverse("filieres:accueil")},
+        {"label": "Contact & Signalement", "url": request.path},
+    ]
+    
+    context = {
+        "form": form,
+        "breadcrumb": breadcrumb,
+    }
+    return render(request, "resultats/contact.html", context)
+
+
 # --- ADMIN CBVs ---
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -304,7 +331,7 @@ class UECreateView(AdminRequiredMixin, CreateView):
     model = UE
     form_class = UEForm
     template_name = "resultats/ue_form.html"
-    success_url = reverse_lazy("resultats:ue_list")
+    success_url = reverse_lazy("resultats_admin:ue_list")
 
     def form_valid(self, form):
         messages.success(self.request, "L'UE a été créée avec succès.")
@@ -314,7 +341,7 @@ class UEUpdateView(AdminRequiredMixin, UpdateView):
     model = UE
     form_class = UEForm
     template_name = "resultats/ue_form.html"
-    success_url = reverse_lazy("resultats:ue_list")
+    success_url = reverse_lazy("resultats_admin:ue_list")
 
     def form_valid(self, form):
         messages.success(self.request, "L'UE a été mise à jour avec succès.")
@@ -323,7 +350,7 @@ class UEUpdateView(AdminRequiredMixin, UpdateView):
 class UEDeleteView(AdminRequiredMixin, DeleteView):
     model = UE
     template_name = "resultats/ue_confirm_delete.html"
-    success_url = reverse_lazy("resultats:ue_list")
+    success_url = reverse_lazy("resultats_admin:ue_list")
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "L'UE a été supprimée avec succès.")

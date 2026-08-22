@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     
     "simple_history",
     "django_q",
+    "axes",
+    "anymail",
 ]
 
 MIDDLEWARE = [
@@ -36,6 +38,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -147,4 +150,20 @@ Q_CLUSTER = {
     "orm": "default",
     "sync": config("Q_SYNC", default=False, cast=bool),
 }
+
+# --- Django Axes (Rate Limiting) ---
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # 1 hour
+AXES_LOCKOUT_TEMPLATE = "403.html"
+
+# --- Email (Brevo via Anymail) ---
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": config("BREVO_API_KEY", default="dummy-key-for-dev"),
+}
+EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@ena.bj")
 

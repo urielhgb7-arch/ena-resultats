@@ -4,13 +4,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from decouple import config
 
+admin_prefix = config('ADMIN_URL_PATH', default='super-secret-admin/')
+
 urlpatterns = [
-    path(f"{config('ADMIN_URL_PATH', default='super-secret-admin/')}", include("apps.portail_admin.urls")),
-    path(f"{config('ADMIN_URL_PATH', default='super-secret-admin/')}django/", admin.site.urls),
+    path(admin_prefix, include([
+        path("", include("apps.portail_admin.urls")),
+        path("filieres/", include("apps.filieres.admin_urls")),
+        path("ue/", include("apps.resultats.admin_urls")),
+        path("imports/", include("apps.imports.urls")),
+        path("django/", admin.site.urls),
+    ])),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("apps.filieres.urls")),
     path("resultats/", include("apps.resultats.urls")),
-    path("imports/", include("apps.imports.urls")),
 ]
 
 if settings.DEBUG:

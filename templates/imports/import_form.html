@@ -41,6 +41,91 @@
   <form id="upload-form" method="post" enctype="multipart/form-data" class="space-y-6">
     {% csrf_token %}
     
+    <div x-data="{
+        annee: '',
+        niveau: '',
+        filiere: '',
+        semestre: '',
+        session: ''
+    }" class="space-y-6">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+            <!-- 1. Année Académique -->
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Année Académique
+                </label>
+                {{ form.annee }}
+            </div>
+            
+            <!-- 2. Niveau d'études -->
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Niveau
+                </label>
+                <select id="select-niveau"
+                        name="niveau_id"
+                        x-model="niveau"
+                        :disabled="!annee"
+                        hx-get="{% url 'filieres:ajax_filieres' %}"
+                        hx-target="#select-filiere"
+                        hx-trigger="change"
+                        class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
+                    <option value="">— Choisir —</option>
+                </select>
+            </div>
+            
+            <!-- 3. Filière -->
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Filière
+                </label>
+                <select id="select-filiere"
+                        name="filiere_id"
+                        x-model="filiere"
+                        :disabled="!niveau"
+                        hx-get="{% url 'filieres:ajax_semestres' %}"
+                        hx-target="#select-semestre"
+                        hx-trigger="change"
+                        class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
+                    <option value="">— Choisir —</option>
+                </select>
+            </div>
+            
+            <!-- 4. Semestre -->
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Semestre
+                </label>
+                <select id="select-semestre"
+                        name="semestre_id"
+                        x-model="semestre"
+                        :disabled="!filiere"
+                        hx-get="{% url 'filieres:ajax_sessions' %}"
+                        hx-target="#select-session"
+                        hx-trigger="change"
+                        class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
+                    <option value="">— Choisir —</option>
+                </select>
+            </div>
+            
+            <!-- 5. Session -->
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Session
+                </label>
+                {{ form.session }}
+            </div>
+            
+            <!-- 6. Modèle de Mapping -->
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Modèle de Mapping
+                </label>
+                {{ form.mapping }}
+            </div>
+        </div>
+        
     <div id="drop-zone" class="drop-zone rounded-2xl p-12 text-center cursor-pointer flex flex-col items-center justify-center min-h-[300px]">
       <div id="upload-icon" class="w-16 h-16 rounded-full bg-brand-violet/10 border border-brand-violet/20 flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
         <svg class="w-8 h-8 text-brand-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
@@ -70,6 +155,7 @@
         <svg class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
       </button>
+    </div>
     </div>
 
   </form>

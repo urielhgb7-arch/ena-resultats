@@ -38,7 +38,11 @@ L'architecture de la base de données est construite pour refléter l'organisati
 
 ### 3. Gestion des Imports (`apps.imports`)
 
-- **ImportFichier** : Entité de traçabilité qui sauvegarde chaque upload de fichier Excel. Elle trace l'auteur, le statut (Succès, Échec), le timestamp et maintient le fichier physique original pour un audit ultérieur.
+Cette application agit comme un pipeline ETL (Extract, Transform, Load) pour sécuriser l'importation de notes :
+
+- **MappingTemplate** : Configuration JSON définissant la structure d'un fichier Excel (colonnes du matricule, ligne des en-têtes, etc.), permettant d'importer divers formats sans modifier le code.
+- **ImportFichier** : Entité de traçabilité d'un upload. Contient un hash SHA-256 (pour éviter les doublons), le lien vers le `MappingTemplate` et la `SessionResultat` cible.
+- **LigneBrute** : Les données extraites (Extract) du fichier Excel sont stockées au format JSON brut. Elles sont ensuite validées et transformées (Transform/Load) en `Etudiant`, `ResultatUE`, et `NoteEC` via une validation stricte (0-20 pour les notes, principe des "quatre yeux").
 
 ---
 

@@ -13,7 +13,7 @@
       </h1>
       <p class="text-gray-400 mt-2">Veuillez remplir les informations de l'Unité d'Enseignement.</p>
     </div>
-    <a href="{% url 'resultats:ue_list' %}" class="p-2 bg-surface border border-bordercol rounded-xl hover:bg-surface-light text-gray-300 transition-colors">
+    <a href="{% url 'resultats_admin:ue_list' %}" class="p-2 bg-surface border border-bordercol rounded-xl hover:bg-surface-light text-gray-300 transition-colors">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
       </svg>
@@ -100,7 +100,7 @@
 
       <!-- Actions -->
       <div class="flex justify-end gap-3 pt-6 border-t border-bordercol/50 mt-6">
-        <a href="{% url 'resultats:ue_list' %}" 
+        <a href="{% url 'resultats_admin:ue_list' %}" 
            class="px-6 py-2.5 rounded-xl border border-bordercol text-gray-300 hover:bg-surface-light transition-colors font-medium">
           Annuler
         </a>

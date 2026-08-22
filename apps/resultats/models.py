@@ -52,6 +52,7 @@ class Etudiant(models.Model):
     annee_promo = models.CharField(max_length=10, blank=True)
     nom = models.CharField(max_length=150)
     prenom = models.CharField(max_length=150)
+    email = models.EmailField(null=True, blank=True)
     history = HistoricalRecords()
 
     class Meta:
@@ -114,3 +115,23 @@ class ResultatUE(models.Model):
 
     def __str__(self):
         return f"{self.etudiant} - {self.ue} : {self.moyenne_ue} ({self.statut})"
+
+
+class ContactSignalement(models.Model):
+    etudiant = models.ForeignKey(
+        Etudiant, on_delete=models.CASCADE, related_name="signalements", null=True, blank=True
+    )
+    nom = models.CharField(max_length=150)
+    email = models.EmailField()
+    sujet = models.CharField(max_length=200)
+    message = models.TextField()
+    date_envoi = models.DateTimeField(auto_now_add=True)
+    traite = models.BooleanField(default=False)
+    
+    class Meta:
+        verbose_name = "Signalement / Contact"
+        verbose_name_plural = "Signalements / Contacts"
+        ordering = ["-date_envoi"]
+
+    def __str__(self):
+        return f"{self.nom} - {self.sujet}"
