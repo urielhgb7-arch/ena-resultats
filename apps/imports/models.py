@@ -29,8 +29,30 @@ class ImportFichier(models.Model):
     mapping = models.ForeignKey(
         MappingTemplate, on_delete=models.SET_NULL, null=True, blank=True
     )
+    TYPE_IMPORT_CHOICES = [
+        ("specifique", "Spécifique (1 filière)"),
+        ("global", "Global (Multi-filières)"),
+    ]
+    type_import = models.CharField(
+        max_length=20, choices=TYPE_IMPORT_CHOICES, default="specifique"
+    )
+    annee_academique = models.ForeignKey(
+        'filieres.AnneeAcademique', on_delete=models.SET_NULL, null=True, blank=True, related_name="imports"
+    )
+    SEMESTRE_CHOICES = [
+        ("Semestre 1", "Semestre 1"),
+        ("Semestre 2", "Semestre 2"),
+        ("Semestre 3", "Semestre 3"),
+        ("Semestre 4", "Semestre 4"),
+        ("Semestre 5", "Semestre 5"),
+        ("Semestre 6", "Semestre 6"),
+    ]
+    semestre = models.CharField(
+        max_length=20, choices=SEMESTRE_CHOICES, null=True, blank=True,
+        help_text="Utilisé pour les imports globaux pour définir le semestre cible."
+    )
     session = models.ForeignKey(
-        'filieres.SessionResultat', on_delete=models.SET_NULL, null=True, related_name="imports"
+        'filieres.SessionResultat', on_delete=models.SET_NULL, null=True, blank=True, related_name="imports"
     )
     fichier_hash = models.CharField(max_length=64, unique=True, null=True, blank=True)
     statut = models.CharField(

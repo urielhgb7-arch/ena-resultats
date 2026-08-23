@@ -42,82 +42,105 @@
     {% csrf_token %}
     
     <div x-data="{
+        type_import: 'specifique',
         annee: '',
         niveau: '',
         filiere: '',
-        semestre: '',
+        semestre_specifique: '',
+        semestre_global: '',
         session: ''
     }" class="space-y-6">
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-            <!-- 1. Année Académique -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- 0. Type d'Import -->
+            <div class="lg:col-span-4 mb-2">
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Type d'Import
+                </label>
+                {{ form.type_import }}
+                <p class="text-xs text-slate-500 mt-1" x-show="type_import === 'global'">Importe un classeur complet avec plusieurs feuilles (une par filière) pour le semestre choisi.</p>
+                <p class="text-xs text-slate-500 mt-1" x-show="type_import === 'specifique'">Importe un fichier pour une session d'examen précise (une seule filière).</p>
+            </div>
+
+            <!-- 1. Année Académique (Commun) -->
             <div>
                 <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                     Année Académique
                 </label>
-                {{ form.annee }}
+                {{ form.annee_academique }}
             </div>
-            
-            <!-- 2. Niveau d'études -->
-            <div>
-                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Niveau
+
+            <!-- 2. Semestre Global (Uniquement pour Global) -->
+            <div x-show="type_import === 'global'">
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-brand mb-1.5">
+                    Semestre Global
                 </label>
-                <select id="select-niveau"
-                        name="niveau_id"
-                        x-model="niveau"
-                        :disabled="!annee"
-                        hx-get="{% url 'filieres:ajax_filieres' %}"
-                        hx-target="#select-filiere"
-                        hx-trigger="change"
-                        class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
-                    <option value="">— Choisir —</option>
-                </select>
+                {{ form.semestre }}
             </div>
-            
-            <!-- 3. Filière -->
-            <div>
-                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Filière
-                </label>
-                <select id="select-filiere"
-                        name="filiere_id"
-                        x-model="filiere"
-                        :disabled="!niveau"
-                        hx-get="{% url 'filieres:ajax_semestres' %}"
-                        hx-target="#select-semestre"
-                        hx-trigger="change"
-                        class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
-                    <option value="">— Choisir —</option>
-                </select>
+
+            <!-- Champs Spécifiques (Cachés si Global) -->
+            <div x-show="type_import === 'specifique'" class="contents">
+                <!-- Niveau d'études -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                        Niveau
+                    </label>
+                    <select id="select-niveau"
+                            name="niveau_id"
+                            x-model="niveau"
+                            :disabled="!annee"
+                            hx-get="{% url 'filieres:ajax_filieres' %}"
+                            hx-target="#select-filiere"
+                            hx-trigger="change"
+                            class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
+                        <option value="">— Choisir —</option>
+                    </select>
+                </div>
+                
+                <!-- Filière -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                        Filière
+                    </label>
+                    <select id="select-filiere"
+                            name="filiere_id"
+                            x-model="filiere"
+                            :disabled="!niveau"
+                            hx-get="{% url 'filieres:ajax_semestres' %}"
+                            hx-target="#select-semestre"
+                            hx-trigger="change"
+                            class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
+                        <option value="">— Choisir —</option>
+                    </select>
+                </div>
+                
+                <!-- Semestre Spécifique -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                        Semestre
+                    </label>
+                    <select id="select-semestre"
+                            name="semestre_id"
+                            x-model="semestre_specifique"
+                            :disabled="!filiere"
+                            hx-get="{% url 'filieres:ajax_sessions' %}"
+                            hx-target="#select-session"
+                            hx-trigger="change"
+                            class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
+                        <option value="">— Choisir —</option>
+                    </select>
+                </div>
+                
+                <!-- Session -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                        Session
+                    </label>
+                    {{ form.session }}
+                </div>
             </div>
-            
-            <!-- 4. Semestre -->
-            <div>
-                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Semestre
-                </label>
-                <select id="select-semestre"
-                        name="semestre_id"
-                        x-model="semestre"
-                        :disabled="!filiere"
-                        hx-get="{% url 'filieres:ajax_sessions' %}"
-                        hx-target="#select-session"
-                        hx-trigger="change"
-                        class="w-full border border-black/15 bg-white text-black rounded-xl px-3 py-2 text-sm disabled:opacity-50 focus:ring-[#1F6F4A] focus:border-[#1F6F4A]">
-                    <option value="">— Choisir —</option>
-                </select>
-            </div>
-            
-            <!-- 5. Session -->
-            <div>
-                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Session
-                </label>
-                {{ form.session }}
-            </div>
-            
-            <!-- 6. Modèle de Mapping -->
+
+            <!-- Modèle de Mapping (Commun) -->
             <div>
                 <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                     Modèle de Mapping

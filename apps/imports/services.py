@@ -10,22 +10,14 @@ les LigneBrute en NoteEC / ResultatUE en s'appuyant sur un MappingTemplate.
 
 import openpyxl
 from .models import LigneBrute, ImportFichier
-
+from .matching import matcher_filiere
 
 def extraire_lignes_brutes(fichier_path, import_fichier: ImportFichier):
     """
-    Lit un fichier Excel au format 'large' (en-têtes fusionnés par UE,
-    comme les PV réels de l'ENA) et crée une LigneBrute par étudiant,
-    sans aucune interprétation métier à ce stade.
-
-    Structure attendue (à confirmer/ajuster une fois le vrai fichier
-    du Bureau obtenu) :
-      - Ligne d'en-tête 1 : "UE:CODE" fusionné sur plusieurs colonnes
-      - Ligne d'en-tête 2 : sous-colonnes (EC1, EC2, Moy UE, R)
-      - Lignes suivantes : une ligne par étudiant
+    Lit un fichier Excel au format 'large' (en-têtes fusionnés par UE) et crée une LigneBrute par étudiant.
+    Parcourt TOUTES les feuilles du classeur pour le support des imports globaux.
     """
     wb = openpyxl.load_workbook(fichier_path, data_only=True)
-    ws = wb.active
     
     mapping = import_fichier.mapping
     config = mapping.config_colonnes if mapping else {}
@@ -35,41 +27,53 @@ def extraire_lignes_brutes(fichier_path, import_fichier: ImportFichier):
     min_row = config.get("data_start_row", 3)
     ec_row = config.get("ec_row", 2)
 
-    # Reconstitue quelle colonne appartient à quelle UE, via les cellules fusionnées
-    ue_par_colonne = {}
-    for merged_range in ws.merged_cells.ranges:
-        valeur = ws.cell(merged_range.min_row, merged_range.min_col).value
-        if valeur and "UE" in str(valeur).upper():
-            for col in range(merged_range.min_col, merged_range.max_col + 1):
-                ue_par_colonne[col] = str(valeur).replace("UE:", "").strip()
-
     lignes_creees = []
     ligne_num = 0
 
-    for row in ws.iter_rows(min_row=min_row, values_only=False):
-        if row[0].value is None:  # ligne vide = fin du tableau
-            continue
-        ligne_num += 1
-
-        donnees = {
-            "numero": row[col_numero].value if col_numero < len(row) else None,
-            "matricule": row[col_matricule].value if col_matricule < len(row) else None,
-            "nom_prenoms": row[col_nom].value if col_nom < len(row) else None,
-            "resultats_par_ue": {},
+    for ws in wb.worksheets:
+        # Matcher la filière basée sur le nom de la feuille
+        match_result = matcher_filiere(ws.title)
+        match_info = {
+            "entree": match_result.entree,
+            "statut": match_result.statut,
+            "candidat": match_result.candidat,
+            "score": match_result.score,
         }
 
-        for col_idx, cell in enumerate(row, start=1):
-            if col_idx in ue_par_colonne:
-                type_champ = ws.cell(ec_row, col_idx).value  # EC1, EC2, Moy UE, R
-                ue_code = ue_par_colonne[col_idx]
-                donnees["resultats_par_ue"].setdefault(ue_code, {})
-                donnees["resultats_par_ue"][ue_code][str(type_champ)] = cell.value
+        # Reconstitue quelle colonne appartient à quelle UE, via les cellules fusionnées
+        ue_par_colonne = {}
+        for merged_range in ws.merged_cells.ranges:
+            valeur = ws.cell(merged_range.min_row, merged_range.min_col).value
+            if valeur and "UE" in str(valeur).upper():
+                for col in range(merged_range.min_col, merged_range.max_col + 1):
+                    ue_par_colonne[col] = str(valeur).replace("UE:", "").strip()
 
-        ligne = LigneBrute.objects.create(
-            import_fichier=import_fichier,
-            numero_ligne=ligne_num,
-            donnees_brutes=donnees,
-        )
-        lignes_creees.append(ligne)
+        for row in ws.iter_rows(min_row=min_row, values_only=False):
+            if row[0].value is None:  # ligne vide = fin du tableau
+                continue
+            ligne_num += 1
+
+            donnees = {
+                "feuille_source": ws.title,
+                "match_filiere": match_info,
+                "numero": row[col_numero].value if col_numero < len(row) else None,
+                "matricule": row[col_matricule].value if col_matricule < len(row) else None,
+                "nom_prenoms": row[col_nom].value if col_nom < len(row) else None,
+                "resultats_par_ue": {},
+            }
+
+            for col_idx, cell in enumerate(row, start=1):
+                if col_idx in ue_par_colonne:
+                    type_champ = ws.cell(ec_row, col_idx).value  # EC1, EC2, Moy UE, R
+                    ue_code = ue_par_colonne[col_idx]
+                    donnees["resultats_par_ue"].setdefault(ue_code, {})
+                    donnees["resultats_par_ue"][ue_code][str(type_champ)] = cell.value
+
+            ligne = LigneBrute.objects.create(
+                import_fichier=import_fichier,
+                numero_ligne=ligne_num,
+                donnees_brutes=donnees,
+            )
+            lignes_creees.append(ligne)
 
     return lignes_creees

@@ -81,7 +81,12 @@ class ImportFichierDetailView(AdminRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Limiter à 50 pour l'aperçu
-        context["lignes"] = self.object.lignes.all()[:50]
+        lignes = self.object.lignes.all()
+        context["lignes"] = lignes[:50]
+        context["has_unresolved"] = any(
+            ligne.donnees_brutes.get("match_filiere", {}).get("statut") == "a_valider"
+            for ligne in lignes
+        )
         return context
 
 
@@ -108,9 +113,15 @@ class ValiderImportView(AdminRequiredMixin, View):
             
         try:
             with transaction.atomic():
-                session_resultat = import_fichier.session
-                if not session_resultat:
-                    raise Exception("Aucune session n'est associée à cet import.")
+                is_global = import_fichier.type_import == "global"
+                
+                if not is_global:
+                    session_resultat = import_fichier.session
+                    if not session_resultat:
+                        raise Exception("Aucune session n'est associée à cet import spécifique.")
+                else:
+                    if not import_fichier.annee_academique or not import_fichier.semestre:
+                        raise Exception("L'année académique et le semestre sont obligatoires pour un import global.")
                 
                 # Check for mapping (for now we assume extraction produced standard JSON)
                 if not import_fichier.mapping:
@@ -139,11 +150,36 @@ class ValiderImportView(AdminRequiredMixin, View):
                     
                     for ue_code, dict_notes in resultats_ue.items():
                         # Scoping UE par (code, session)
-                        ue, _ = UE.objects.get_or_create(
-                            code=ue_code,
-                            session=session_resultat,
-                            defaults={"nom": f"UE {ue_code}", "credits": 30, "statut": "brouillon"}
-                        )
+                        if is_global:
+                            # 1. Obtenir la filière matchée
+                            match_info = donnees.get("match_filiere", {})
+                            if match_info.get("statut") != "auto":
+                                ligne.statut_traitement = 'erreur'
+                                ligne.message_erreur = f"Filière non reconnue: {match_info.get('entree')}"
+                                ligne_has_error = True
+                                break
+                            
+                            candidat_filiere = match_info.get("candidat")
+                            
+                            # 2. Chercher l'UE dans l'année académique et semestre pour cette filière
+                            ue = UE.objects.filter(
+                                code=ue_code,
+                                session__semestre__libelle=import_fichier.semestre,
+                                session__semestre__filiere__nom=candidat_filiere,
+                                session__semestre__filiere__niveau__annee=import_fichier.annee_academique
+                            ).first()
+                            
+                            if not ue:
+                                ligne.statut_traitement = 'erreur'
+                                ligne.message_erreur = f"UE {ue_code} introuvable pour la filière {candidat_filiere} ({import_fichier.semestre})"
+                                ligne_has_error = True
+                                break
+                        else:
+                            ue, _ = UE.objects.get_or_create(
+                                code=ue_code,
+                                session=session_resultat,
+                                defaults={"nom": f"UE {ue_code}", "credits": 30, "statut": "brouillon"}
+                            )
                         
                         moy_ue = dict_notes.get("Moy UE")
                         est_validee = dict_notes.get("R") == "V"
@@ -163,7 +199,7 @@ class ValiderImportView(AdminRequiredMixin, View):
                         resultat_ue, _ = ResultatUE.objects.get_or_create(
                             etudiant=etudiant,
                             ue=ue,
-                            defaults={"moyenne": moy_ue_val, "est_validee": est_validee}
+                            defaults={"moyenne_ue": moy_ue_val, "statut": "V" if est_validee else "NV", "import_fichier": import_fichier}
                         )
                         
                         # Traitement des ECs
@@ -206,8 +242,64 @@ class ValiderImportView(AdminRequiredMixin, View):
                 import_fichier.save()
                 
                 messages.success(request, "L'import a été validé. Les notes sont enregistrées en statut BROUILLON.")
+                
         except Exception as e:
             messages.error(request, f"Erreur lors de la validation : {e}")
             
+        return redirect("imports:detail", pk=pk)
+
+
+from apps.filieres.models import Filiere
+
+class ImportFichierResolveView(AdminRequiredMixin, View):
+    def get(self, request, pk):
+        import_fichier = get_object_or_404(ImportFichier, pk=pk)
+        if import_fichier.statut != 'en_attente':
+            messages.error(request, "Cet import ne peut plus être modifié.")
+            return redirect("imports:detail", pk=pk)
+
+        # Trouver les feuilles non reconnues
+        feuilles_a_valider = set()
+        for ligne in import_fichier.lignes.all():
+            match_info = ligne.donnees_brutes.get("match_filiere", {})
+            if match_info.get("statut") == "a_valider":
+                feuilles_a_valider.add(match_info.get("entree"))
+                
+        if not feuilles_a_valider:
+            messages.info(request, "Aucune correspondance manuelle requise.")
+            return redirect("imports:detail", pk=pk)
+            
+        filieres_officielles = Filiere.objects.values_list('nom', flat=True).distinct().order_by('nom')
+        
+        return render(request, "imports/import_resolve.html", {
+            "import_fichier": import_fichier,
+            "feuilles": sorted(list(feuilles_a_valider)),
+            "filieres": filieres_officielles
+        })
+
+    def post(self, request, pk):
+        import_fichier = get_object_or_404(ImportFichier, pk=pk)
+        
+        # Mettre à jour les lignes avec les choix manuels
+        lignes = import_fichier.lignes.all()
+        modifications_count = 0
+        
+        with transaction.atomic():
+            for ligne in lignes:
+                match_info = ligne.donnees_brutes.get("match_filiere", {})
+                entree = match_info.get("entree")
+                
+                if match_info.get("statut") == "a_valider" and entree:
+                    choix = request.POST.get(f"resolve_{entree}")
+                    if choix:
+                        # Mettre à jour le JSON de la ligne
+                        donnees = ligne.donnees_brutes
+                        donnees["match_filiere"]["statut"] = "auto"  # On le force à auto pour passer la validation
+                        donnees["match_filiere"]["candidat"] = choix
+                        ligne.donnees_brutes = donnees
+                        ligne.save()
+                        modifications_count += 1
+                        
+        messages.success(request, f"Correspondances manuelles enregistrées. Vous pouvez maintenant valider l'import.")
         return redirect("imports:detail", pk=pk)
 

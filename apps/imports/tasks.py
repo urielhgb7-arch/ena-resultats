@@ -35,45 +35,16 @@ def process_import_staging_task(import_fichier_id):
         if not import_obj.fichier:
             return {"status": "error", "message": "Aucun fichier attaché."}
 
-        wb = openpyxl.load_workbook(import_obj.fichier.path, data_only=True)
-        sheet = wb.active
-
-        rows = list(sheet.iter_rows(values_only=True))
-        if not rows or len(rows) <= 1:
-            return {"status": "error", "message": "Fichier Excel vide ou sans en-tête."}
-
-        headers = [str(h).strip() if h is not None else f"col_{idx}" for idx, h in enumerate(rows[0])]
-
-        lignes_brutes = []
-        for row_idx, row in enumerate(rows[1:], start=2):
-            donnees = {}
-            has_data = False
-            for col_idx, val in enumerate(row):
-                if val is not None and str(val).strip() != "":
-                    has_data = True
-                    if isinstance(val, (int, float, bool)):
-                        donnees[headers[col_idx]] = val
-                    else:
-                        donnees[headers[col_idx]] = str(val).strip()
-                else:
-                    donnees[headers[col_idx]] = None
-
-            if has_data:
-                lignes_brutes.append(
-                    LigneBrute(
-                        import_fichier=import_obj,
-                        numero_ligne=row_idx,
-                        donnees_brutes=donnees,
-                        statut_traitement="en_attente"
-                    )
-                )
+        from apps.imports.services import extraire_lignes_brutes
+        
+        with transaction.atomic():
+            LigneBrute.objects.filter(import_fichier=import_obj).delete()
+            lignes_brutes = extraire_lignes_brutes(import_obj.fichier.path, import_obj)
 
         if lignes_brutes:
-            with transaction.atomic():
-                # Nettoie les anciennes lignes si ré-import
-                LigneBrute.objects.filter(import_fichier=import_obj).delete()
-                LigneBrute.objects.bulk_create(lignes_brutes, batch_size=500)
-
+            # extraire_lignes_brutes insère déjà en base via objects.create(), mais si on veut faire du bulk, 
+            # on pourrait modifier extraire_lignes_brutes pour ne pas insérer.
+            # Cependant, comme il a déjà inséré, on a juste besoin de mettre à jour le statut.
             import_obj.statut = "en_attente"
             import_obj.save(update_fields=["statut"])
 
@@ -81,7 +52,7 @@ def process_import_staging_task(import_fichier_id):
         return {
             "status": "success",
             "lignes_count": len(lignes_brutes),
-            "headers": headers
+            "headers": []
         }
 
     except Exception as exc:

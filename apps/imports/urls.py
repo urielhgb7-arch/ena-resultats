@@ -8,5 +8,6 @@ urlpatterns = [
     path("nouveau/", views.ImportFichierCreateView.as_view(), name="create"),
     path("<int:pk>/", views.ImportFichierDetailView.as_view(), name="detail"),
     path("<int:pk>/valider/", views.ValiderImportView.as_view(), name="valider"),
+    path("<int:pk>/resoudre/", views.ImportFichierResolveView.as_view(), name="resolve_matching"),
     path("<int:pk>/supprimer/", views.ImportFichierDeleteView.as_view(), name="delete"),
 ]
