@@ -1,0 +1,23 @@
+from django.db import models
+
+class AnneeAcademique(models.Model):
+    libelle = models.CharField(max_length=20)
+    active = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'annee_academique'
+
+class Niveau(models.Model):
+    annee = models.ForeignKey(AnneeAcademique, on_delete=models.CASCADE)
+    libelle = models.CharField(max_length=10)
+
+    class Meta:
+        db_table = 'niveau'
+
+class SessionResultat(models.Model):
+    semestre = models.ForeignKey('filieres.Semestre', on_delete=models.CASCADE)
+    specialite = models.ForeignKey('filieres.Specialite', on_delete=models.SET_NULL, null=True, blank=True)
+    type = models.CharField(max_length=30)
+
+    class Meta:
+        db_table = 'session_resultat'
