@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug / Test Frontend - ENA</title>
+    <!-- Tailwind CSS (via CDN pour le dev/debug) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 p-8">
+
+    <!-- WARNING BANNER -->
+    <div class="bg-red-600 text-white p-4 rounded mb-8 shadow-md">
+        <h1 class="text-2xl font-bold">⚠️ ATTENTION : INTERFACE DE DÉBOGAGE</h1>
+        <p class="mt-2">
+            Cet onglet est réservé aux tests fonctionnels et ne doit <strong>jamais</strong> être déployé ou accessible en production lorsque <code>DEBUG=False</code>.
+        </p>
+    </div>
+
+    <!-- MAIN CONTAINER WITH TABS (Alpine.js) -->
+    <div x-data="{ tab: 'referentiel' }" class="bg-white rounded shadow-md">
+
+        <!-- TAB NAVIGATION -->
+        <div class="flex border-b border-gray-200">
+            <button @click="tab = 'referentiel'" :class="{ 'border-b-2 border-blue-500 text-blue-600': tab === 'referentiel' }" class="px-6 py-3 font-medium hover:text-blue-500 focus:outline-none">Référentiel</button>
+            <button @click="tab = 'import'" :class="{ 'border-b-2 border-blue-500 text-blue-600': tab === 'import' }" class="px-6 py-3 font-medium hover:text-blue-500 focus:outline-none">Import</button>
+            <button @click="tab = 'recherche'" :class="{ 'border-b-2 border-blue-500 text-blue-600': tab === 'recherche' }" class="px-6 py-3 font-medium hover:text-blue-500 focus:outline-none">Recherche</button>
+            <button @click="tab = 'releve'" :class="{ 'border-b-2 border-blue-500 text-blue-600': tab === 'releve' }" class="px-6 py-3 font-medium hover:text-blue-500 focus:outline-none">Relevé</button>
+            <button @click="tab = 'roles'" :class="{ 'border-b-2 border-blue-500 text-blue-600': tab === 'roles' }" class="px-6 py-3 font-medium hover:text-blue-500 focus:outline-none">Rôles</button>
+        </div>
+
+        <!-- TAB CONTENT -->
+        <div class="p-6">
+
+            <!-- REFERENTIEL TAB -->
+            <div x-show="tab === 'referentiel'">
+                <h2 class="text-xl font-bold mb-4">Référentiel (Années, Niveaux, Filières)</h2>
+                <p class="text-gray-600 mb-4">Liste rapide des éléments de base du référentiel académique.</p>
+                <div class="bg-gray-50 p-4 border rounded" id="debug-referentiel-content">
+                    <!-- Contenu chargé via HTMX ou boucles de template Django -->
+                    <em>Données à implémenter...</em>
+                </div>
+            </div>
+
+            <!-- IMPORT TAB -->
+            <div x-show="tab === 'import'" style="display: none;">
+                <h2 class="text-xl font-bold mb-4">Import Excel</h2>
+                <p class="text-gray-600 mb-4">Test de l'upload et visualisation du résultat du mapping.</p>
+                <div class="bg-gray-50 p-4 border rounded">
+                    <form id="debug-import-form" class="mb-4">
+                        <!-- Exemple de formulaire, à relier à une vraie vue Django/HTMX -->
+                        <input type="file" name="fichier_excel" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                        <button type="button" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Lancer l'import test</button>
+                    </form>
+                    <div id="debug-import-result" class="mt-4 p-4 bg-white border border-dashed rounded">
+                        <em>Résultat du mapping à afficher ici...</em>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECHERCHE TAB -->
+            <div x-show="tab === 'recherche'" style="display: none;">
+                <h2 class="text-xl font-bold mb-4">Recherche d'étudiant</h2>
+                <p class="text-gray-600 mb-4">Test du basculement Nom/Prénom vs Matricule.</p>
+                <div class="bg-gray-50 p-4 border rounded" x-data="{ modeRecherche: 'nom' }">
+
+                    <div class="mb-4">
+                        <label class="mr-4 inline-flex items-center">
+                            <input type="radio" x-model="modeRecherche" value="nom" class="form-radio text-blue-600">
+                            <span class="ml-2">Par Nom/Prénom</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" x-model="modeRecherche" value="matricule" class="form-radio text-blue-600">
+                            <span class="ml-2">Par Matricule</span>
+                        </label>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <input type="text" :placeholder="modeRecherche === 'nom' ? 'Entrez un nom...' : 'Entrez un matricule...'" class="flex-1 p-2 border rounded">
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Rechercher</button>
+                    </div>
+
+                    <div id="debug-recherche-result" class="mt-4 p-4 bg-white border border-dashed rounded">
+                        <em>Résultats de la recherche...</em>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RELEVE TAB -->
+            <div x-show="tab === 'releve'" style="display: none;">
+                <h2 class="text-xl font-bold mb-4">Relevé Personnel Agrégé</h2>
+                <p class="text-gray-600 mb-4">Affichage du relevé agrégé brut (L1-L3) pour un étudiant de test.</p>
+                <div class="bg-gray-50 p-4 border rounded">
+                     <div class="flex gap-2 mb-4">
+                        <input type="text" placeholder="Matricule étudiant test" class="p-2 border rounded">
+                        <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Charger Relevé</button>
+                    </div>
+                    <div id="debug-releve-content" class="p-4 bg-white border border-dashed rounded">
+                        <em>Relevé agrégé à afficher ici...</em>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROLES TAB -->
+            <div x-show="tab === 'roles'" style="display: none;">
+                <h2 class="text-xl font-bold mb-4">Informations Utilisateur / Rôles</h2>
+                <p class="text-gray-600 mb-4">Affiche l'utilisateur connecté et ses permissions effectives.</p>
+                <div class="bg-gray-50 p-4 border rounded">
+                    <ul class="list-disc pl-5">
+                        <li><strong>Utilisateur :</strong> <span id="debug-user-name"><em>À implémenter</em></span></li>
+                        <li><strong>Est Authentifié :</strong> <span id="debug-user-auth"><em>À implémenter</em></span></li>
+                        <li><strong>Rôle(s) / Groupes :</strong> <span id="debug-user-roles"><em>À implémenter</em></span></li>
+                        <li><strong>Permissions :</strong> <span id="debug-user-perms"><em>À implémenter</em></span></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
