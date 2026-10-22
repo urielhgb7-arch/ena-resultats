@@ -1,0 +1,8 @@
+Django==4.2.11
+django-anymail==10.2
+psycopg2-binary
+openpyxl
+rules
+django-simple-history
+argon2-cffi
+django-axes
